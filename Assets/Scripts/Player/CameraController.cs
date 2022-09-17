@@ -41,8 +41,8 @@ public class CameraController : MonoBehaviour
         float deltaTime = Time.deltaTime;//inputs.deltaTime;
 
         //ref var inputs = ref playerState.input;
-        ref var yaw = ref playerState.camYaw;
-        ref var pitch = ref playerState.camPitch;
+        float yaw = playerState.camYaw;
+        float pitch = playerState.camPitch;
 
         yaw += inputs.cameraInput.x * deltaTime * turnSpeed.x;
         pitch -= inputs.cameraInput.y * deltaTime * turnSpeed.y;
@@ -57,8 +57,21 @@ public class CameraController : MonoBehaviour
             Mathf.Sin(pitch * Mathf.Deg2Rad) * camOffset,
             Mathf.Cos(yaw * Mathf.Deg2Rad) * camOffset * Mathf.Cos(pitch * Mathf.Deg2Rad));
 
+        RaycastHit hit;
+        if(Physics.Raycast(playerState.Transform.position + camPos+Vector3.up*.5f, Vector3.down, out hit, 5f))
+        {
+            if(hit.distance <= .5f)
+            {
+                camPos.y += .5f-hit.distance;
+                pitch += inputs.cameraInput.y * deltaTime * turnSpeed.y;
+            }
+        }
+
+
         transform.position = playerState.Transform.position + camPos;
 
+        playerState.camYaw = yaw;
+        playerState.camPitch = pitch;
         playerState.camPos = transform.position;
         playerState.camRot = transform.eulerAngles;
 

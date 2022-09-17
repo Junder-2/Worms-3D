@@ -9,5 +9,5 @@ public class GameRules
     public static byte wormsPerPlayer = 1;
 
     public const float maxSpeed = 4;
-    public const float jumpHeight = 3;
+    public const float jumpHeight = 3.5f;
 }

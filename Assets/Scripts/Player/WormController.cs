@@ -17,28 +17,36 @@ public class WormController : MonoBehaviour
         public float jumpHeight;
 
         public bool alive;
+
+        public Vector3 velocity;
     }
 
     public PlayerState State;
     
     [SerializeField] 
-        private MeshRenderer _renderer;
+        private Renderer[] _renderer;
 
     [SerializeField] 
         private Transform model;
 
     private Rigidbody rb;
+    private Animator animator;
 
     [SerializeField] private Material[] playerMat;
 
     public void SetPlayer(int num)
     {
-        _renderer.material = playerMat[num];
+        for (int i = 0; i < _renderer.Length; i++)
+        {
+            _renderer[i].material = playerMat[num];
+        }
+        
     }
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
         _grounded = true;
         _forwardVector = Vector3.forward;
         _normalVector = Vector3.up;
@@ -63,15 +71,18 @@ public class WormController : MonoBehaviour
         if (_currentState == WormState.moving && state != WormState.jump)
             forwardVel = 0;
 
+        if(_currentState == WormState.jump)
+            forwardVel = 0;
+
         if (state == WormState.jump)
         {
             _grounded = false;
             RotateModel(Quaternion.LookRotation(_forwardVector, Vector3.up), true);
-            Vector3 vel = rb.velocity;
-            vel.y = State.jumpHeight;
-            rb.velocity = vel;
+            State.velocity.y = State.jumpHeight;
             _holdJump = true;
         }
+
+
 
         _bonk = false;
         
@@ -80,6 +91,7 @@ public class WormController : MonoBehaviour
         _currentState = state;
 
         _stateTimer = 0;
+        _deltaTime = 0;
     }
 
     private PlayerInput.InputAction _input;
@@ -93,7 +105,7 @@ public class WormController : MonoBehaviour
 
     void RotateModel(Quaternion target, bool instant = false)
     {
-        model.rotation = instant ? Quaternion.RotateTowards(model.rotation, target, _deltaTime * 15f) : target;
+        model.rotation = instant ? target : Quaternion.RotateTowards(model.rotation, target, _deltaTime * 360f);
     }
 
     bool CalcGrounded(ref Vector3 position)
@@ -111,7 +123,7 @@ public class WormController : MonoBehaviour
 
             float offset = _grounded ? .1f : 0;
 
-            if (position.y < floorY + offset)
+            if (position.y < floorY + offset && steepness < .85f)
             {
                 position.y = floorLevel;
                 return true;
@@ -123,39 +135,40 @@ public class WormController : MonoBehaviour
         return false;
     }
 
+    const float hitboxHeight = .3f;
+
     void GroundPhysicsStep()
     {
         RaycastHit hit;
 
         Vector3 oldPos = rb.position;
         
-        Vector3 pos = oldPos+rb.velocity*_deltaTime;
+        Vector3 pos = oldPos+State.velocity*_deltaTime;
 
         _grounded = CalcGrounded(ref pos);
 
-        Vector3 dir = (pos - oldPos);
+        oldPos = new Vector3(oldPos.x, pos.y, oldPos.z);
 
-        bool collision = rb.SweepTest(dir.normalized, out hit, dir.magnitude);
-        //transform.forward = _forwardVector;
-        //transform.up = _normalVector;
+        Vector3 dir = (pos-oldPos);
+
+        bool collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);//Physics.SphereCast(oldPos+.5f*Vector3.up, .5f, dir.normalized, out hit, dir.magnitude);
         
         if(collision)
         {
-            Vector3 flatHit = new Vector3(hit.point.x, 0, hit.point.z);
-            Vector3 flatPos = new Vector3(pos.x, 0, pos.z);
             Vector3 flatNormal = new Vector3(hit.normal.x, 0, hit.normal.z).normalized;
             
             Debug.DrawRay(hit.point, flatNormal, Color.blue);
 
-            float dist = Vector3.Distance(flatHit, flatPos);
+            float dist = Vector3.Distance(pos+hitboxHeight*Vector3.up, hit.point);
+            print(dist + ", " + hit.distance);
 
-            if (hit.point.y > floorLevel && dist < .5f)
+            if (hit.point.y > floorLevel && (dist) <= .5f)
             {
-                pos += flatNormal * dist;
+                pos += flatNormal * (.5f-dist);
             }
         }
         
-        rb.MovePosition(pos);
+        transform.position = (pos);
     }
 
     void AirPhysicsStep()
@@ -164,48 +177,38 @@ public class WormController : MonoBehaviour
         
         Vector3 oldPos = rb.position;
 
-        Vector3 pos = oldPos + rb.velocity * _deltaTime;
+        Vector3 pos = oldPos + State.velocity * _deltaTime;
         
         _grounded = CalcGrounded(ref pos);
-        
+
         Vector3 dir = (pos - oldPos);
 
-        bool collision = rb.SweepTest(dir.normalized, out hit, dir.magnitude);
-        
-        print(collision);
+        bool collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
+
+        if(!collision)
+        {
+            collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, Vector3.down, out hit, 1f);
+        }
         
         if (collision)
         {
-            Vector3 vel = rb.velocity;
-
-            Vector3 flatHit = new Vector3(hit.point.x, 0, hit.point.z);
-            Vector3 flatPos = new Vector3(pos.x, 0, pos.z);
-            float dist = Vector3.Distance(flatHit, flatPos);
-            //float dist = Vector3.Distance(pos+.5f*Vector3.up, hit.point);
+            float dist = Vector3.Distance(pos+hitboxHeight*Vector3.up, hit.point);
+            print(dist + ", " + hit.distance);
             
-            if (hit.point.y > floorLevel && dist < .5f)
+            if (hit.point.y > floorLevel && dist <= .5f)
             {
                 print("hello?");
                 
-                pos += hit.normal * (dist);
+                pos += hit.normal * (.5f-dist);
 
-                _bonk = true;
-            }
-            else if(dist < .5f)
-            {
-                print("hello?==");
-                vel.x = 0;
-                vel.z = 0;
-
-                rb.velocity = vel;
-                
-                pos += hit.normal * (dist);
+                if(new Vector2(State.velocity.x, State.velocity.z).magnitude > 1f)
+                    State.velocity = Vector3.Reflect(State.velocity, hit.normal)/3;
 
                 _bonk = true;
             }
         }
 
-        rb.MovePosition(pos);
+        transform.position = (pos);
     }
 
     private float _deltaTime;
@@ -240,11 +243,17 @@ public class WormController : MonoBehaviour
 
     void IdleState()
     {
-        rb.velocity = Vector3.zero;
-        
-        GroundPhysicsStep();
-        
-        RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector));
+        if(_stateTimer == 0)
+        {
+            animator.SetBool("Grounded", true);
+            animator.SetBool("Walk", false);
+
+            State.velocity = Vector3.zero;
+            
+            GroundPhysicsStep();
+            
+            RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector), true);
+        }
 
         if (!_grounded || steepness > .5f)
         {
@@ -252,13 +261,11 @@ public class WormController : MonoBehaviour
             return;
         }
 
-
         if (_input.moveNonZero)
         {
             SetState(WormState.moving);
             return;
         }
-
 
         if (_input.aInput == 1)
         {
@@ -272,6 +279,12 @@ public class WormController : MonoBehaviour
 
     void MoveState()
     {
+        if(_stateTimer == 0)
+        {
+            animator.SetBool("Grounded", true);
+            animator.SetBool("Walk", true);
+        }
+
         if (!_input.moveNonZero)
         {
             SetState(WormState.idle);
@@ -284,12 +297,14 @@ public class WormController : MonoBehaviour
 
         _forwardVector = Vector3.MoveTowards(_forwardVector, move, _deltaTime * 5f);
 
-        forwardVel += maxSpeed * .5f * _deltaTime;
+        forwardVel += maxSpeed * .25f * _deltaTime;
+
+        animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
 
         if (forwardVel > maxSpeed)
             forwardVel = maxSpeed;
 
-        rb.velocity = _forwardVector * forwardVel;
+        State.velocity = _forwardVector * forwardVel;
 
         GroundPhysicsStep();
 
@@ -308,11 +323,11 @@ public class WormController : MonoBehaviour
         }
     }
 
-    private const float terminalVel = -15;
+    private const float terminalVel = -25;
 
     void ApplyAirForce(float gravityMultiplier)
     {
-        Vector3 vel = rb.velocity;
+        Vector3 vel = State.velocity;
         
         vel.y += Physics.gravity.y * gravityMultiplier*Time.fixedDeltaTime;
 
@@ -323,19 +338,23 @@ public class WormController : MonoBehaviour
         if(Mathf.Abs(vel.z) > 0)
             vel.z -= vel.z*.25f*_deltaTime;
 
-        rb.velocity = vel;
-
-        print(vel);
+        State.velocity = vel;
     }
     
     void JumpState()
     {
+        if(_stateTimer == 0)
+        {
+            animator.SetBool("Grounded", false);
+            animator.SetTrigger("Jump");
+        }
+
         if (_stateTimer < .2f)
             _grounded = false;
         
         float multi = 1;
 
-        if (_holdJump && _input.aInput > 1)
+        if (_holdJump && _input.aInput > 1 && State.velocity.y > 0)
             multi = .4f;
         else
         {
@@ -360,6 +379,10 @@ public class WormController : MonoBehaviour
 
     void FreeFallState()
     {
+        if(_stateTimer == 0)
+        {
+            animator.SetBool("Grounded", false);
+        }
         ApplyAirForce(1);
         AirPhysicsStep();
 
