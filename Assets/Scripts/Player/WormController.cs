@@ -201,7 +201,7 @@ public class WormController : MonoBehaviour
                 
                 pos += hit.normal * (.5f-dist);
 
-                if(new Vector2(State.velocity.x, State.velocity.z).magnitude > 1f)
+                if(new Vector2(State.velocity.x, State.velocity.z).magnitude > 2f)
                     State.velocity = Vector3.Reflect(State.velocity, hit.normal)/3;
 
                 _bonk = true;
