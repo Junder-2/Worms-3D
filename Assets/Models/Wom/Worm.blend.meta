@@ -10,6 +10,36 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: BatBase
+    second: {fileID: 2100000, guid: ab528ad677455594889e1d62b6d77951, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BombBase
+    second: {fileID: 2100000, guid: 8a9ad708ed182c447bb7e6aff08d889c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BombFuse
+    second: {fileID: 2100000, guid: 1fc65ec6dc234e64c9bd870d91afa3b5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: BombHat
+    second: {fileID: 2100000, guid: 291127c9b56b06542b7b6b9e6c65f9cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DynamiteBase
+    second: {fileID: 2100000, guid: f0f318a7d2f234740b3a1433eab28043, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GunBase
+    second: {fileID: 2100000, guid: 6a4cceae5ef066f43a469b4c5ef1c5a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: WormEyes
     second: {fileID: 2100000, guid: f8c62473e0e40e94dbec8a57b9d086e4, type: 2}
   - first:

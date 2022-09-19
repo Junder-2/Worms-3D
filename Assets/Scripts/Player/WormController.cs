@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WormController : MonoBehaviour
+public class WormController : MonoBehaviour, IEntity
 {
     public struct PlayerState
     {
@@ -16,9 +16,16 @@ public class WormController : MonoBehaviour
         public float maxMoveSpeed;
         public float jumpHeight;
 
+        public float health;
         public bool alive;
 
         public Vector3 velocity;
+
+        public Vector3 startPos;
+        public float maxDistance;
+        public float floorLevel;
+
+        public byte currentWeapon;
     }
 
     public PlayerState State;
@@ -34,13 +41,19 @@ public class WormController : MonoBehaviour
 
     [SerializeField] private Material[] playerMat;
 
+    [SerializeField] private Weapon[] weapons;
+
+    public Vector3 GetForwards()
+    {
+        return Vector3.ProjectOnPlane(_forwardVector, _normalVector);
+    }
+
     public void SetPlayer(int num)
     {
         for (int i = 0; i < _renderer.Length; i++)
         {
             _renderer[i].material = playerMat[num];
         }
-        
     }
 
     private void Awake()
@@ -54,7 +67,7 @@ public class WormController : MonoBehaviour
         UpdateInput(new PlayerInput.InputAction());
     }
     
-    public enum WormState{idle, moving, jump, freefall}
+    public enum WormState{idle, moving, jump, freefall, meleeAttack}
 
     private WormState _previousState;
     public WormState _currentState;
@@ -81,9 +94,7 @@ public class WormController : MonoBehaviour
             State.velocity.y = State.jumpHeight;
             _holdJump = true;
         }
-
-
-
+        
         _bonk = false;
         
         _previousState = _currentState;
@@ -117,6 +128,7 @@ public class WormController : MonoBehaviour
             float floorY = hit.point.y;
             
             floorLevel = floorY;
+            State.floorLevel = floorLevel;
             
             _normalVector = hit.normal;
             steepness = Mathf.Sqrt(_normalVector.x * _normalVector.x + _normalVector.z * _normalVector.z);
@@ -151,7 +163,8 @@ public class WormController : MonoBehaviour
 
         Vector3 dir = (pos-oldPos);
 
-        bool collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);//Physics.SphereCast(oldPos+.5f*Vector3.up, .5f, dir.normalized, out hit, dir.magnitude);
+        bool collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
+        //Physics.SphereCast(oldPos+.5f*Vector3.up, .5f, dir.normalized, out hit, dir.magnitude);
         
         if(collision)
         {
@@ -159,10 +172,9 @@ public class WormController : MonoBehaviour
             
             Debug.DrawRay(hit.point, flatNormal, Color.blue);
 
-            float dist = Vector3.Distance(pos+hitboxHeight*Vector3.up, hit.point);
-            print(dist + ", " + hit.distance);
+            float dist = Vector3.Distance(pos + hitboxHeight * Vector3.up, hit.point);
 
-            if (hit.point.y > floorLevel && (dist) <= .5f)
+            if (hit.point.y > floorLevel+hitboxHeight/3 && (dist) <= .5f)
             {
                 pos += flatNormal * (.5f-dist);
             }
@@ -193,9 +205,9 @@ public class WormController : MonoBehaviour
         if (collision)
         {
             float dist = Vector3.Distance(pos+hitboxHeight*Vector3.up, hit.point);
-            print(dist + ", " + hit.distance);
+            //print(dist + ", " + hit.distance);
             
-            if (hit.point.y > floorLevel && dist <= .5f)
+            if (hit.point.y > floorLevel+hitboxHeight/3 && dist <= .5f)
             {
                 print("hello?");
                 
@@ -209,6 +221,30 @@ public class WormController : MonoBehaviour
         }
 
         transform.position = (pos);
+    }
+
+    private Weapon _currentWeapon;
+    void SwitchWeapon(bool setZero = false)
+    {
+        if(_currentWeapon != null)_currentWeapon.gameObject.SetActive(false);
+        
+        ref var curr = ref State.currentWeapon;
+        curr++;
+        if (setZero)
+            curr = 0;
+        
+        if (weapons.Length < curr)
+            curr = 0;
+
+        if (curr == 0) return;
+        
+        _currentWeapon = weapons[curr - 1];
+            
+        if(!_currentWeapon.CanEquip())
+            SwitchWeapon();
+            
+        _currentWeapon.gameObject.SetActive(true);
+
     }
 
     private float _deltaTime;
@@ -234,7 +270,13 @@ public class WormController : MonoBehaviour
             case WormState.freefall:
                 FreeFallState();
                 break;
+            case WormState.meleeAttack:
+                MeleeAttackState();
+                break;
         }
+        
+        if(_input.xInput == 1)
+            SwitchWeapon();
         
         _stateTimer += _deltaTime;
     }
@@ -272,6 +314,15 @@ public class WormController : MonoBehaviour
             SetState(WormState.jump);
             return;
         }
+
+        if (_input.bInput == 1 && State.currentWeapon != 0)
+        {
+            if (_currentWeapon.IsMelee())
+            {
+                SetState(WormState.meleeAttack);
+                return;
+            }
+        }
             
     }
 
@@ -297,16 +348,21 @@ public class WormController : MonoBehaviour
 
         _forwardVector = Vector3.MoveTowards(_forwardVector, move, _deltaTime * 5f);
 
-        forwardVel += maxSpeed * .25f * _deltaTime;
+        forwardVel += maxSpeed * .4f * _deltaTime;
 
         animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
 
         if (forwardVel > maxSpeed)
             forwardVel = maxSpeed;
 
+        Vector3 oldPos = transform.position;
+
         State.velocity = _forwardVector * forwardVel;
 
         GroundPhysicsStep();
+
+        //if (Vector3.Distance(State.startPos, transform.position) > State.maxDistance)
+        //s    transform.position = oldPos;
 
         RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector));
 
@@ -318,6 +374,7 @@ public class WormController : MonoBehaviour
 
         if (_input.aInput > 0)
         {
+            State.velocity = _forwardVector * Mathf.Max(forwardVel, maxSpeed/2);
             SetState(WormState.jump);
             return;
         }
@@ -391,5 +448,45 @@ public class WormController : MonoBehaviour
             SetState(WormState.idle);
             return;
         }
+    }
+
+    private float _waitTime;
+    void MeleeAttackState()
+    {
+        if (_stateTimer == 0)
+        {
+            _waitTime = _currentWeapon.UseWeapon(this);
+        }
+
+        if (_stateTimer > _waitTime)
+        {
+            SetState(WormState.idle);
+            return;
+        }
+    }
+
+    public void SetAnimTrigger(string anim)
+    {
+        animator.SetTrigger(anim);
+    }
+
+    public void DeEquipWeapon()
+    {
+        SwitchWeapon(true);
+    }
+
+    public void Damage(float amount, Vector3 force)
+    {
+        print("damaged");
+        _grounded = false;
+        SetState(WormState.freefall);
+
+        State.velocity = force;
+        State.health -= amount;
+    }
+
+    public Vector3 GetPos()
+    {
+        return transform.position+hitboxHeight*Vector3.up;
     }
 }

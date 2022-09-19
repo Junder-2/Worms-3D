@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(PlayerInput))]
@@ -44,6 +45,23 @@ public class LevelController : MonoBehaviour
 
         _currentWorm = (byte)(newWorm + _currentPlayer*_wormsPerPlayer);
         _currentWormController = _wormsControllers[_currentWorm];
+
+        _currentWormController.State.startPos = _currentWormController.transform.position;
+
+        //DisplayMoveRange();
+    }
+
+    [SerializeField] 
+        private GameObject moveRangePrefab;
+
+        private GameObject _moveRange;
+    void DisplayMoveRange()
+    {
+        Vector3 pos = _currentWormController.State.startPos;
+        
+        _moveRange.SetActive(true);
+        _moveRange.transform.position = pos;
+        _moveRange.transform.localScale = Vector3.one*(GameRules.maxDistance*2);
     }
 
     private WormController[] _wormsControllers;
@@ -77,6 +95,9 @@ public class LevelController : MonoBehaviour
         
         _playerInput = GetComponent<PlayerInput>();
         _cameraController = CameraController.Instance;
+        
+        _moveRange = Instantiate(moveRangePrefab, Vector3.zero, Quaternion.identity);
+        _moveRange.SetActive(false);
         
         SetState(LevelState.startGame);
     }
@@ -117,6 +138,8 @@ public class LevelController : MonoBehaviour
 
         float jumpHeight = GameRules.jumpHeight;
         float maxMoveSpeed = GameRules.maxSpeed;
+        float maxDistance = GameRules.maxDistance;
+        float maxHealth = GameRules.wormsMaxHealth;
         
         for (int i = 0; i < _playerAmount; i++)
         {
@@ -138,7 +161,11 @@ public class LevelController : MonoBehaviour
                 newWorm.State.maxMoveSpeed = maxMoveSpeed;
                 newWorm.State.jumpHeight = jumpHeight;
                 newWorm.State.Transform = newWorm.transform;
+                newWorm.State.maxDistance = maxDistance;
+                newWorm.State.currentWeapon = 0;
                 newWorm.State.alive = true;
+                newWorm.State.startPos = spawnPos;
+                newWorm.State.health = maxHealth;
 
                 _cameraController.InstantiateWormCam(ref newWorm);
 

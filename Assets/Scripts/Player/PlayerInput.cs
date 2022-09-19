@@ -16,6 +16,7 @@ public class PlayerInput : MonoBehaviour
         
         public byte aInput;
         public byte bInput;
+        public byte xInput;
 
         public float camYaw;
 
@@ -47,6 +48,9 @@ public class PlayerInput : MonoBehaviour
         action.BInput.started += ctx => _bInput = true;
         action.BInput.canceled += ctx => _bInput = false;
 
+        action.XInput.started += ctx => _xInput = true;
+        action.XInput.canceled += ctx => _xInput = false;
+
         action.Move.performed += ctx => _moveInput = ctx.ReadValue<Vector2>();
         action.Move.canceled += ctx => _moveInput = Vector2.zero;
         
@@ -56,6 +60,7 @@ public class PlayerInput : MonoBehaviour
 
     private bool _aInput;
     private bool _bInput;
+    private bool _xInput;
 
     private Vector2 _moveInput;
     private Vector2 _cameraInput;
@@ -88,6 +93,13 @@ public class PlayerInput : MonoBehaviour
             input.bInput = 2;
         else
             input.bInput = 0;
+        
+        if (_xInput && input.xInput == 0)
+            input.xInput = 1;
+        else if (_xInput)
+            input.xInput = 2;
+        else
+            input.xInput = 0;
     }
 
 }

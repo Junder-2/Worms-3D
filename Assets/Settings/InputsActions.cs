@@ -62,6 +62,15 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""XInput"",
+                    ""type"": ""Button"",
+                    ""id"": ""bad90121-2767-4e98-93a8-029425d1ca74"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -240,6 +249,28 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                     ""action"": ""Camera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""32ef9e5f-f8ca-4c68-9cd6-237434a2953b"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""XInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""369ab8f2-796d-4892-92aa-81f7531b9670"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""XInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -275,6 +306,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
         m_Actions_BInput = m_Actions.FindAction("BInput", throwIfNotFound: true);
         m_Actions_Move = m_Actions.FindAction("Move", throwIfNotFound: true);
         m_Actions_Camera = m_Actions.FindAction("Camera", throwIfNotFound: true);
+        m_Actions_XInput = m_Actions.FindAction("XInput", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -338,6 +370,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Actions_BInput;
     private readonly InputAction m_Actions_Move;
     private readonly InputAction m_Actions_Camera;
+    private readonly InputAction m_Actions_XInput;
     public struct ActionsActions
     {
         private @InputsActions m_Wrapper;
@@ -346,6 +379,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
         public InputAction @BInput => m_Wrapper.m_Actions_BInput;
         public InputAction @Move => m_Wrapper.m_Actions_Move;
         public InputAction @Camera => m_Wrapper.m_Actions_Camera;
+        public InputAction @XInput => m_Wrapper.m_Actions_XInput;
         public InputActionMap Get() { return m_Wrapper.m_Actions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -367,6 +401,9 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                 @Camera.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnCamera;
                 @Camera.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnCamera;
                 @Camera.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnCamera;
+                @XInput.started -= m_Wrapper.m_ActionsActionsCallbackInterface.OnXInput;
+                @XInput.performed -= m_Wrapper.m_ActionsActionsCallbackInterface.OnXInput;
+                @XInput.canceled -= m_Wrapper.m_ActionsActionsCallbackInterface.OnXInput;
             }
             m_Wrapper.m_ActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -383,6 +420,9 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                 @Camera.started += instance.OnCamera;
                 @Camera.performed += instance.OnCamera;
                 @Camera.canceled += instance.OnCamera;
+                @XInput.started += instance.OnXInput;
+                @XInput.performed += instance.OnXInput;
+                @XInput.canceled += instance.OnXInput;
             }
         }
     }
@@ -411,5 +451,6 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
         void OnBInput(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnCamera(InputAction.CallbackContext context);
+        void OnXInput(InputAction.CallbackContext context);
     }
 }
