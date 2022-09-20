@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class WeaponBat : Weapon
         return true;
     }
 
-    public override float UseWeapon(WormController worm)
+    public override void UseWeapon(WormController worm)
     {
         worm.SetAnimTrigger("Swing");
         
@@ -32,23 +33,40 @@ public class WeaponBat : Weapon
             if (entity != null)
             {
                 float dist = (entity.GetPos() - wormPos).magnitude;
-                
-                if(dist > 1.5f)
-                    return 1.5f;
+
+                if (dist > 1.5f)
+                {
+                    worm.StopAttackWait();
+                    return;
+                }
+                    
+
+                dist = Mathf.Clamp01(2 - dist);
                 
                 Vector3 force = (entity.GetPos() - wormPos).normalized * baseKnockback + Vector3.up*launchKnockback;
 
-                StartCoroutine(Damage(entity, baseDamage, force, .5f));
+                StartCoroutine(Damage(entity, baseDamage*dist, force*dist, worm));
             }
         }
-
-        return 1.5f;
+        else
+        {
+            StartCoroutine(DelayReturn(worm));
+        }
     }
 
-    IEnumerator Damage(IEntity entity, float damage, Vector3 force, float delay)
+    IEnumerator Damage(IEntity entity, float damage, Vector3 force, WormController worm)
     {
-        yield return new WaitForSeconds(delay);
+        yield return new WaitForSeconds(.5f);
         
         entity.Damage(baseDamage, force);
+
+        yield return new WaitForSeconds(.2f);
+        worm.StopAttackWait();
+    }
+
+    IEnumerator DelayReturn(WormController worm)
+    {
+        yield return new WaitForSeconds(.75f);
+        worm.StopAttackWait();
     }
 }

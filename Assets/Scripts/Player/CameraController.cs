@@ -48,12 +48,13 @@ public class CameraController : MonoBehaviour
         //ref var inputs = ref playerState.input;
         float yaw = playerState.camYaw;
         float pitch = playerState.camPitch;
-
-        yaw += inputs.cameraInput.x * deltaTime * turnSpeed.x;
-        pitch -= inputs.cameraInput.y * deltaTime * turnSpeed.y;
+        if(!playerState.freezeCamYaw)
+            yaw += inputs.cameraInput.x * deltaTime * turnSpeed.x;
+        if(!playerState.freezeCamPitch)
+            pitch -= inputs.cameraInput.y * deltaTime * turnSpeed.y;
 
         yaw %= 360;
-        pitch %= 180;
+        pitch = Mathf.Clamp(pitch, -90f, 90f);
 
         float zoomMulti = 1;
 

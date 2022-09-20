@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ExplosionObject : MonoBehaviour
+public class ExplosionObject : MonoBehaviour, IEntity
 {
-    private float _maxDamage, _maxForce, _fuseTime, _explosionRange;
+    private float _maxDamage, _maxForce, _explosionRange;
 
     [SerializeField] private GameObject bombMesh;
     [SerializeField] private GameObject explosionEffect;
@@ -16,16 +16,16 @@ public class ExplosionObject : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _maxDamage = maxDamage;
         _maxForce = force;
-        _fuseTime = fuseTime;
         _explosionRange = explosionRange;
 
-        StartCoroutine(Explode());
+        StartCoroutine(Explode(fuseTime));
     }
 
-    IEnumerator Explode()
+    IEnumerator Explode(float fuseTime)
     {
-        yield return new WaitForSeconds(_fuseTime);
+        yield return new WaitForSeconds(fuseTime);
 
+        _exploded = true;
         _rb.isKinematic = true;
         bombMesh.SetActive(false);
         explosionEffect.SetActive(true);
@@ -56,5 +56,19 @@ public class ExplosionObject : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         
         Destroy(gameObject);
+    }
+
+    private bool _exploded = false;
+    public void Damage(float amount, Vector3 force)
+    {
+        if(_exploded)
+            return;
+        StopAllCoroutines();
+        StartCoroutine(Explode(0.1f));
+    }
+
+    public Vector3 GetPos()
+    {
+        return _rb.position;
     }
 }

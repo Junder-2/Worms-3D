@@ -7,16 +7,17 @@ public class WeaponDynamite : Weapon
 {
     [SerializeField] private byte startAmount;
     
-    private byte amount;
+    private byte amount = 3;
 
     [SerializeField] private float fuseTime, explosionRange;
 
     [SerializeField]
         private GameObject plantedDynamitePrefab;
 
-    private void Start()
+    protected override void Start()
     {
         amount = startAmount;
+        base.Start();
     }
 
     public override bool IsMelee()
@@ -29,15 +30,13 @@ public class WeaponDynamite : Weapon
         return amount > 0;
     }
     
-    public override float UseWeapon(WormController worm)
+    public override void UseWeapon(WormController worm)
     {
         worm.SetAnimTrigger("Plant");
 
         amount--;
 
         StartCoroutine(DelayPlace(worm.GetPos() + worm.GetForwards()*.5f, worm));
-
-        return 1.5f;
     }
 
     IEnumerator DelayPlace(Vector3 pos, WormController worm)
@@ -48,5 +47,8 @@ public class WeaponDynamite : Weapon
         
         if(amount <= 0)
             worm.DeEquipWeapon();
+
+        yield return new WaitForSeconds(.5f);
+        worm.StopAttackWait();
     }
 }

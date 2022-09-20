@@ -161,7 +161,7 @@ public class LevelController : MonoBehaviour
                 newWorm.State.maxMoveSpeed = maxMoveSpeed;
                 newWorm.State.jumpHeight = jumpHeight;
                 newWorm.State.Transform = newWorm.transform;
-                newWorm.State.maxDistance = maxDistance;
+                //newWorm.State.maxDistance = maxDistance;
                 newWorm.State.currentWeapon = 0;
                 newWorm.State.alive = true;
                 newWorm.State.startPos = spawnPos;
@@ -180,7 +180,7 @@ public class LevelController : MonoBehaviour
         SetState(LevelState.playerControl);
     }
 
-    private Vector3 spawnRange = new Vector3(50, 50, 50);
+    private Vector3 spawnRange = new Vector3(100, 100, 50);
     bool TryToSpawn(out Vector3 pos)
     {
         bool success = false;
@@ -192,7 +192,10 @@ public class LevelController : MonoBehaviour
 
         if (Physics.Raycast(pos + Vector3.up * .5f, Vector3.down, out hit, 100))
         {
-            if (hit.point.y > 0)
+            Vector3 normal = hit.normal;
+            float steepness = Mathf.Sqrt(normal.x * normal.x + normal.z * normal.z);
+
+            if (hit.point.y > 0 && steepness < .5f)
                 success = true;
 
             pos.y = hit.point.y;
@@ -215,6 +218,7 @@ public class LevelController : MonoBehaviour
     {
         if (_stateTimer == 0)
         {
+            _currentWormController.CancelAction();
             NextPlayer();
         }
 

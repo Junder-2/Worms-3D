@@ -101,7 +101,7 @@ MonoBehaviour:
   baseDamage: 20
   baseKnockback: 10
   startAmount: 3
-  fuseTime: 5
+  fuseTime: 4
   explosionRange: 6
   plantedDynamitePrefab: {fileID: 5635745321435163752, guid: d6e388eb5486907408b9431511e66751, type: 3}
 --- !u!1001 &1277087572672988315

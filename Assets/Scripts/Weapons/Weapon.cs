@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,12 @@ public abstract class Weapon : MonoBehaviour
 {
     [SerializeField] protected float baseDamage;
     [SerializeField] protected float baseKnockback;
-    
+
+    protected virtual void Start()
+    {
+        gameObject.SetActive(false);
+    }
+
     public virtual float GetDamage()
     {
         return baseDamage;
@@ -27,8 +33,14 @@ public abstract class Weapon : MonoBehaviour
         return true;
     }
 
-    public virtual float UseWeapon(WormController worm)
+    public virtual void UseWeapon(WormController worm)
     {
-        return 0;
+    }
+
+    public void CancelWeapon(WormController worm)
+    {
+        StopAllCoroutines();
+        
+        worm.StopAttackWait();
     }
 }
