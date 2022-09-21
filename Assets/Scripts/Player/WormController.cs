@@ -20,6 +20,8 @@ public class WormController : MonoBehaviour, IEntity
         public float health;
         public bool alive;
 
+        public byte wormIndex, playerIndex;
+
         public Vector3 velocity;
 
         public Vector3 startPos;
@@ -68,6 +70,7 @@ public class WormController : MonoBehaviour, IEntity
 
     private void Awake()
     {
+        _maxHealth = GameRules.wormsMaxHealth;
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         _grounded = true;
@@ -89,6 +92,8 @@ public class WormController : MonoBehaviour, IEntity
     private Vector3 _slopeVector;
     private float _floorLevel;
     private float _steepness;
+
+    private float _maxHealth;
 
     private bool _unlockRotation;
     private Vector3 _rotationVelocity;
@@ -578,6 +583,8 @@ public class WormController : MonoBehaviour, IEntity
 
         State.velocity += force;
         State.health -= amount;
+        
+        UIManager.Instance.UpdatePlayerHealth(State.playerIndex, State.wormIndex, State.health/_maxHealth);
     }
 
     public Vector3 GetPos()

@@ -25,6 +25,8 @@ public class LevelController : MonoBehaviour
     private byte _currentWorm;
     private byte _lastWorm;
 
+    private float _maxHealth;
+
     void NextPlayer()
     {
         if(_currentWormController != null)_currentWormController.UpdateInput(new PlayerInput.InputAction());
@@ -161,6 +163,8 @@ public class LevelController : MonoBehaviour
                 newWorm.State.maxMoveSpeed = maxMoveSpeed;
                 newWorm.State.jumpHeight = jumpHeight;
                 newWorm.State.Transform = newWorm.transform;
+                newWorm.State.wormIndex = (byte)j;
+                newWorm.State.playerIndex = (byte)i;
                 //newWorm.State.maxDistance = maxDistance;
                 newWorm.State.currentWeapon = 0;
                 newWorm.State.alive = true;
@@ -172,6 +176,8 @@ public class LevelController : MonoBehaviour
                 _wormsControllers[_wormsPerPlayer * i + j] = newWorm;
             }
         }
+        
+        UIManager.Instance.SetPlayersHealth(_playerAmount, _wormsPerPlayer, maxHealth);
 
         _currentPlayer = (byte)Random.Range(0, _playerAmount);
         
