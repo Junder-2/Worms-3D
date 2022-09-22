@@ -20,9 +20,9 @@ public class WeaponDynamite : Weapon
         base.Start();
     }
 
-    public override bool IsMelee()
+    public override int GetAmount()
     {
-        return true;
+        return amount;
     }
 
     public override bool CanEquip()
@@ -45,10 +45,9 @@ public class WeaponDynamite : Weapon
         GameObject plantedDynamite = Instantiate(plantedDynamitePrefab, pos, Quaternion.identity);
         plantedDynamite.GetComponent<ExplosionObject>().Instantiate(baseDamage, baseKnockback, fuseTime, explosionRange);
         
-        if(amount <= 0)
-            worm.DeEquipWeapon();
-
         yield return new WaitForSeconds(.5f);
         worm.StopAttackWait();
+        if(amount <= 0)
+            worm.DeEquipWeapon();
     }
 }

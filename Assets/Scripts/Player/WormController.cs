@@ -33,6 +33,8 @@ public class WormController : MonoBehaviour, IEntity
         //public float floorLevel;
 
         public byte currentWeapon;
+
+        public float currentWaterLevel;
     }
 
     public PlayerState State;
@@ -80,7 +82,7 @@ public class WormController : MonoBehaviour, IEntity
         UpdateInput(new PlayerInput.InputAction());
     }
     
-    public enum WormState{idle, moving, jump, freefall, slide, meleeAttack}
+    public enum WormState{idle, moving, jump, freefall, slide, attack, death}
 
     private WormState _previousState;
     public WormState _currentState;
@@ -131,6 +133,18 @@ public class WormController : MonoBehaviour, IEntity
     public void UpdateInput(PlayerInput.InputAction input)
     {
         _input = input;
+    }
+
+    public void SetPlayerTurn()
+    {
+        int[] weaponAmount = new int[weapons.Length];
+
+        for (int i = 0; i < weaponAmount.Length; i++)
+        {
+            weaponAmount[i] = weapons[i].GetAmount();
+        }
+        
+        UIManager.Instance.InstanceWeaponUI(weaponAmount, State.currentWeapon-1);
     }
 
     public PlayerInput.InputAction GetInput()
@@ -248,6 +262,7 @@ public class WormController : MonoBehaviour, IEntity
                 print("hello?");
                 
                 pos += hit.normal * (.5f-dist);
+                pos -= _slopeVector * (.5f * _deltaTime * Physics.gravity.y * _steepness);
 
                 if(new Vector2(State.velocity.x, State.velocity.z).magnitude > 5f)
                     State.velocity = Vector3.Reflect(State.velocity, hit.normal)/3;
@@ -274,7 +289,11 @@ public class WormController : MonoBehaviour, IEntity
         if (weapons.Length < curr)
             curr = 0;
 
-        if (curr == 0) return;
+        if (curr == 0)
+        {
+            UIManager.Instance.UpdateWeaponUI(-1, 0);
+            return;
+        }
         
         _currentWeapon = weapons[curr - 1];
 
@@ -286,6 +305,8 @@ public class WormController : MonoBehaviour, IEntity
 
         _currentWeapon.gameObject.SetActive(true);
         
+        UIManager.Instance.UpdateWeaponUI(curr-1, _currentWeapon.GetAmount());
+        
         print(curr);
     }
 
@@ -296,8 +317,13 @@ public class WormController : MonoBehaviour, IEntity
         UpdateCharacter();
     }
 
-    public void UpdateCharacter()
+    private void UpdateCharacter()
     {
+        if (transform.position.y + hitboxHeight < State.currentWaterLevel)
+        {
+            Damage(9999, Vector3.zero);
+        }
+        
         switch (_currentState)
         {
             case WormState.idle:
@@ -315,8 +341,11 @@ public class WormController : MonoBehaviour, IEntity
             case WormState.slide:
                 SlideState();
                 break;
-            case WormState.meleeAttack:
-                MeleeAttackState();
+            case WormState.attack:
+                AttackState();
+                break;
+            case WormState.death:
+                DeathState();
                 break;
         }
         
@@ -370,11 +399,8 @@ public class WormController : MonoBehaviour, IEntity
 
         if (_input.bInput == 1 && State.currentWeapon != 0)
         {
-            if (_currentWeapon.IsMelee())
-            {
-                SetState(WormState.meleeAttack);
-                return;
-            }
+            SetState(WormState.attack);
+            return;
         }
             
     }
@@ -460,7 +486,7 @@ public class WormController : MonoBehaviour, IEntity
         }
     }
 
-    private const float terminalVel = -25;
+    private const float terminalVel = -20;
 
     void ApplyAirForce(float gravityMultiplier)
     {
@@ -528,7 +554,7 @@ public class WormController : MonoBehaviour, IEntity
         ApplyAirForce(1);
         AirPhysicsStep();
 
-        if (_grounded && _steepness < .5f)
+        if (_grounded)
         {
             SetState(WormState.idle);
             return;
@@ -537,19 +563,33 @@ public class WormController : MonoBehaviour, IEntity
 
     public void StopAttackWait() => _attackWait = false;
     private bool _attackWait;
-    void MeleeAttackState()
+    void AttackState()
     {
         if (_stateTimer == 0)
         {
             _attackWait = true;
             _currentWeapon.UseWeapon(this);
+            return;
         }
 
         if (!_attackWait)
         {
+            UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
             SetState(WormState.idle);
             return;
         }
+    }
+
+    void DeathState()
+    {
+        State.alive = false;
+        ForceEndTurn();
+        gameObject.SetActive(false);
+    }
+
+    public void ForceEndTurn()
+    {
+        LevelController.Instance.ForceTurnEnd();
     }
 
     public void SetAnimTrigger(string anim)
@@ -559,6 +599,7 @@ public class WormController : MonoBehaviour, IEntity
 
     public void DeEquipWeapon()
     {
+        UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
         SwitchWeapon(true);
     }
 
@@ -582,9 +623,12 @@ public class WormController : MonoBehaviour, IEntity
         SetState(WormState.freefall);
 
         State.velocity += force;
-        State.health -= amount;
+        State.health = Mathf.Max(State.health - amount, 0);
         
         UIManager.Instance.UpdatePlayerHealth(State.playerIndex, State.wormIndex, State.health/_maxHealth);
+        
+        if(State.health <= 0)
+            SetState(WormState.death);
     }
 
     public Vector3 GetPos()

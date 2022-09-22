@@ -12,19 +12,42 @@ public class WeaponBat : Weapon
         return base.CanEquip();
     }
 
-    public override bool IsMelee()
-    {
-        return true;
-    }
-
     public override void UseWeapon(WormController worm)
     {
-        worm.SetAnimTrigger("Swing");
+        StartCoroutine(BatAction(worm));
+    }
+
+    IEnumerator BatAction(WormController worm)
+    {
+        worm.SetAnimTrigger("SwingA");
         
         RaycastHit hit;
 
         Vector3 wormPos = worm.GetPos();
         Vector3 wormForwards = worm.GetForwards();
+
+        bool chargeBat = true;
+        float chargeStrength = 1f;
+
+        yield return new WaitForSeconds(.2f);
+
+        do
+        {
+            PlayerInput.InputAction input = worm.GetInput();
+
+            if (input.bInput == 0)
+                chargeBat = false;
+            else
+            {
+                chargeStrength += Time.deltaTime;
+                if (chargeStrength > 2)
+                {
+                    chargeBat = false;
+                    chargeStrength = 2;
+                }
+            }
+            yield return null;
+        } while (chargeBat);
 
         if (Physics.Raycast(wormPos, wormForwards, out hit, 5f))
         {
@@ -37,36 +60,30 @@ public class WeaponBat : Weapon
                 if (dist > 1.5f)
                 {
                     worm.StopAttackWait();
-                    return;
+                    StopAllCoroutines();
                 }
-                    
 
                 dist = Mathf.Clamp01(2 - dist);
                 
                 Vector3 force = (entity.GetPos() - wormPos).normalized * baseKnockback + Vector3.up*launchKnockback;
+                
+                worm.SetAnimTrigger("SwingB");
 
-                StartCoroutine(Damage(entity, baseDamage*dist, force*dist, worm));
+                yield return new WaitForSeconds(.1f);
+
+                dist *= chargeStrength;
+        
+                entity.Damage(baseDamage*dist, force*dist);
+
+                yield return new WaitForSeconds(.2f);
+                worm.StopAttackWait();
             }
         }
         else
         {
-            StartCoroutine(DelayReturn(worm));
+            worm.SetAnimTrigger("SwingB");
+            yield return new WaitForSeconds(.75f);
+            worm.StopAttackWait();
         }
-    }
-
-    IEnumerator Damage(IEntity entity, float damage, Vector3 force, WormController worm)
-    {
-        yield return new WaitForSeconds(.5f);
-        
-        entity.Damage(baseDamage, force);
-
-        yield return new WaitForSeconds(.2f);
-        worm.StopAttackWait();
-    }
-
-    IEnumerator DelayReturn(WormController worm)
-    {
-        yield return new WaitForSeconds(.75f);
-        worm.StopAttackWait();
     }
 }

@@ -12,9 +12,13 @@ public class UIManager : MonoBehaviour
     [SerializeField]
         private Image[] playerHealth;
 
-    private Material[] healthUIMat;
+    private Material[] _healthUIMat;
     private static readonly int HealthValuesA = Shader.PropertyToID("_HealthValuesA");
     private static readonly int HealthValuesB = Shader.PropertyToID("_HealthValuesB");
+
+    [SerializeField] private UIWeaponIcon[] weaponIcon;
+
+    [SerializeField] private UITurnTimer turnTimer;
 
     private void Awake()
     {
@@ -23,7 +27,7 @@ public class UIManager : MonoBehaviour
 
     public void SetPlayersHealth(byte playerAmount, byte wormAmount, float maxHealth)
     {
-        healthUIMat = new Material[playerAmount];
+        _healthUIMat = new Material[playerAmount];
 
         Material UIMatCopy = playerHealth[0].material;
 
@@ -45,17 +49,17 @@ public class UIManager : MonoBehaviour
         UIMatCopy.SetVector(HealthValuesB, bValues);
         UIMatCopy.SetFloat("_MaximumHealth", wormAmount);
 
-        for (int i = 0; i < playerHealth.Length; i++)
+        foreach (var t in playerHealth)
         {
-            playerHealth[i].transform.parent.gameObject.SetActive(false);
+            t.transform.parent.gameObject.SetActive(false);
         }
 
         for (int i = 0; i < playerAmount; i++)
         {
-            healthUIMat[i] = new Material(UIMatCopy);
-            healthUIMat[i].SetColor("_Color", GameRules.playerColors[i]);
+            UIMatCopy.SetColor("_Color", GameRules.playerColors[i]);
+            _healthUIMat[i] = new Material(UIMatCopy);
 
-            playerHealth[i].material = healthUIMat[i];
+            playerHealth[i].material = _healthUIMat[i];
             playerHealth[i].transform.parent.gameObject.SetActive(true);
         }
     }
@@ -66,15 +70,43 @@ public class UIManager : MonoBehaviour
 
         if (worm < 4)
         {
-            Vector4 values = healthUIMat[player].GetVector(HealthValuesA);
+            Vector4 values = _healthUIMat[player].GetVector(HealthValuesA);
             values[index] = health;
-            healthUIMat[player].SetVector(HealthValuesA, values);
+            _healthUIMat[player].SetVector(HealthValuesA, values);
         }
         else
         {
-            Vector4 values = healthUIMat[player].GetVector(HealthValuesB);
+            Vector4 values = _healthUIMat[player].GetVector(HealthValuesB);
             values[index] = health;
-            healthUIMat[player].SetVector(HealthValuesB, values);
+            _healthUIMat[player].SetVector(HealthValuesB, values);
         }
+    }
+
+    public void InstanceWeaponUI(int[] amount, int selected)
+    {
+        for (int i = 0; i < weaponIcon.Length; i++)
+        {
+            if(selected >= 0 && selected == i)weaponIcon[i].SetSelector(true);
+            else weaponIcon[i].SetSelector(false);
+            weaponIcon[i].SetAmount(amount[i]);
+        }
+    }
+
+    public void UpdateWeaponUI(int selected, int amount)
+    {
+        foreach (var t in weaponIcon)
+        {
+            t.SetSelector(false);
+        }
+
+        if (selected < 0) return;
+        weaponIcon[selected].SetSelector(true);
+        weaponIcon[selected].SetAmount(amount);
+    }
+
+    public void StartTimerUI(float time, bool start)
+    {
+        turnTimer.SetTime((int)time);
+        turnTimer.StartTime(start);
     }
 }

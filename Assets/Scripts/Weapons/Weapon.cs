@@ -13,24 +13,14 @@ public abstract class Weapon : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public virtual float GetDamage()
-    {
-        return baseDamage;
-    }
-
-    public virtual float GetKnockback()
-    {
-        return baseKnockback;
-    }
-
-    public virtual bool IsMelee()
-    {
-        return false;
-    }
-
     public virtual bool CanEquip()
     {
         return true;
+    }
+
+    public virtual int GetAmount()
+    {
+        return -1;
     }
 
     public virtual void UseWeapon(WormController worm)

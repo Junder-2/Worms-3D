@@ -13,6 +13,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float camOffset = -8;
 
     private Vector3 _virtualPos;
+    
+    private LayerMask _camCollision => LayerMask.GetMask("Default");
 
     private void Awake()
     {
@@ -70,7 +72,7 @@ public class CameraController : MonoBehaviour
         
         _virtualPos = playerState.Transform.position + camPos;
 
-        if (Physics.Raycast(transform.position + .5f * Vector3.up, Vector3.down, out hit, 10f))
+        if (Physics.Raycast(transform.position + .5f * Vector3.up, Vector3.down, out hit, 10f, _camCollision))
         {
             float dist = _virtualPos.y - hit.point.y;
             
@@ -95,7 +97,7 @@ public class CameraController : MonoBehaviour
         Vector3 dir = new Vector3(sinYaw * -Mathf.Sign(inputs.cameraInput.x), 0,
             cosYaw * -Mathf.Sign(inputs.cameraInput.x)).normalized;
 
-        if (Physics.Raycast(newPos, dir, out hit, 5f))
+        if (Physics.Raycast(newPos, dir, out hit, 5f, _camCollision))
         {
             if (hit.distance < wallOffset)
             {
@@ -128,7 +130,7 @@ public class CameraController : MonoBehaviour
 
     public bool TransitionCamera(Vector3 startCamPos, Vector3 targetCamPos, Vector3 startCamRot, Vector3 targetCamRot, float delta)
     {
-        float distance = Mathf.Max(Vector3.Distance(startCamPos, targetCamPos), Single.Epsilon);
+        /*float distance = Mathf.Max(Vector3.Distance(startCamPos, targetCamPos), Single.Epsilon);
 
         var position = transform.position;
         
@@ -139,6 +141,17 @@ public class CameraController : MonoBehaviour
         position = Vector3.MoveTowards(position, targetCamPos+spherize, delta*transitionSpeed);
         transform.position = position;
 
+        transform.eulerAngles = Vector3.Slerp(startCamRot, targetCamRot, t);
+
+        return t >= 1;*/
+        
+        float distance = Mathf.Max(Vector3.Distance(startCamPos, targetCamPos), Single.Epsilon);
+        var position = transform.position;
+
+        float t = 1 - Mathf.Clamp01(Vector3.Distance(position, targetCamPos)/distance);
+
+        position = Vector3.MoveTowards(position, targetCamPos, transitionSpeed * delta);
+        transform.position = position;
         transform.eulerAngles = Vector3.Slerp(startCamRot, targetCamRot, t);
 
         return t >= 1;

@@ -11,6 +11,8 @@ public class LevelController : MonoBehaviour
     private PlayerInput _playerInput;
     private CameraController _cameraController;
 
+    public static LevelController Instance;
+
     [SerializeField] private GameObject playerPrefab;
 
     public float roundTimer = 30;
@@ -29,7 +31,7 @@ public class LevelController : MonoBehaviour
 
     void NextPlayer()
     {
-        if(_currentWormController != null)_currentWormController.UpdateInput(new PlayerInput.InputAction());
+        _currentWormController.UpdateInput(new PlayerInput.InputAction());
         
         _lastWorm = _currentWorm;
         _lastPlayer = _currentPlayer;
@@ -49,6 +51,8 @@ public class LevelController : MonoBehaviour
         _currentWormController = _wormsControllers[_currentWorm];
 
         _currentWormController.State.startPos = _currentWormController.transform.position;
+        
+        _currentWormController.SetPlayerTurn();
 
         //DisplayMoveRange();
     }
@@ -77,14 +81,21 @@ public class LevelController : MonoBehaviour
     
     private float _stateTimer;
     private bool _deltaPause;
-    
+
     public void SetState(LevelState newState)
     {
+        if (newState == LevelState.playerControl)
+        {
+            UIManager.Instance.StartTimerUI(roundTimer, true);
+        }
+        
         _lastLevelState = _levelState;
 
         _levelState = newState;
 
         _stateTimer = 0;
+
+        _endTurn = false;
 
         //_input.deltaTime = 0;
         _deltaPause = true;
@@ -92,6 +103,8 @@ public class LevelController : MonoBehaviour
 
     private void Start()
     {
+        Instance = this;
+        
         _playerAmount = GameRules.playerAmount;
         _wormsPerPlayer = GameRules.wormsPerPlayer;
         
@@ -167,6 +180,7 @@ public class LevelController : MonoBehaviour
                 newWorm.State.playerIndex = (byte)i;
                 //newWorm.State.maxDistance = maxDistance;
                 newWorm.State.currentWeapon = 0;
+                newWorm.State.currentWaterLevel = 0;
                 newWorm.State.alive = true;
                 newWorm.State.startPos = spawnPos;
                 newWorm.State.health = maxHealth;
@@ -180,6 +194,8 @@ public class LevelController : MonoBehaviour
         UIManager.Instance.SetPlayersHealth(_playerAmount, _wormsPerPlayer, maxHealth);
 
         _currentPlayer = (byte)Random.Range(0, _playerAmount);
+
+        _currentWormController = _wormsControllers[0];
         
         NextPlayer();
         
@@ -216,25 +232,52 @@ public class LevelController : MonoBehaviour
         
         _cameraController.UpdateCamera(ref _currentWormController.State, ref _input);
 
-        if (_stateTimer >= roundTimer)
+        if (_stateTimer >= roundTimer || _endTurn)
             SetState(LevelState.turnEnd);
     }
 
+    [SerializeField] private Transform camTopDown;
+
+    private byte camTransitonState;
     void EndTurnState()
     {
         if (_stateTimer == 0)
         {
             _currentWormController.CancelAction();
             NextPlayer();
+            
+            UIManager.Instance.StartTimerUI(roundTimer, false);
+            camTransitonState = 0;
         }
 
         var lastPlayer = _wormsControllers[_lastWorm].State;
         var currentPlayer = _currentWormController.State;
 
-        bool finished = _cameraController.TransitionCamera(lastPlayer.camPos, currentPlayer.camPos, lastPlayer.camRot,
-            currentPlayer.camRot, Time.deltaTime);
+        switch (camTransitonState)
+        {
+            case 0:
+            {
+                bool finished = _cameraController.TransitionCamera(lastPlayer.camPos, camTopDown.position, lastPlayer.camRot,
+                    camTopDown.eulerAngles, Time.deltaTime);
+                camTransitonState = finished ? (byte)1 : (byte)0;
+                break;
+            }
+            case 1:
+                camTransitonState = _input.aInput == 1 ? (byte)2 : (byte)1;
+                break;
+            case 2:
+            {
+                bool finished = _cameraController.TransitionCamera(camTopDown.position, currentPlayer.camPos, camTopDown.eulerAngles,
+                    currentPlayer.camRot, Time.deltaTime);
+                camTransitonState = finished ? (byte)3 : (byte)2;
+                break;
+            }
+        }
 
-        if (finished)
-            SetState(LevelState.playerControl);
+        if (camTransitonState < 3) return;
+        SetState(LevelState.playerControl);
     }
+
+    private bool _endTurn = false;
+    public void ForceTurnEnd() => _endTurn = true;
 }

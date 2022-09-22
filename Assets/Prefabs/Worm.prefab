@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2691775800400786157}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 579131860674467521}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ArmR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4407658933882877929}
   - component: {fileID: 1323986618155212929}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8168825980197706573}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ArmL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 3766571735558710946}
   - component: {fileID: 8095551162716868306}
   - component: {fileID: 1209876707671412993}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Worm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +310,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8636751809386939657}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bottom.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -342,7 +342,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7131749686120361849}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -376,7 +376,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5422869965756318704}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -412,7 +412,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5789033906756985948}
   - component: {fileID: 8991944393169936559}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hands
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -503,7 +503,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3101127296050219742}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +534,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5727689191310414849}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bottom.002_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -568,7 +568,7 @@ GameObject:
   - component: {fileID: 3087558978812437906}
   - component: {fileID: 5807337855474442344}
   - component: {fileID: 3257688376414552080}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -663,7 +663,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9206604058664848038}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Armature
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -695,7 +695,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4062039962356567642}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ArmL_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -727,7 +727,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 626452881502723407}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ArmR_end
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -761,7 +761,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4703889427352589399}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Bottom.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -793,7 +793,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1514547346093840732}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -826,6 +826,10 @@ PrefabInstance:
     - target: {fileID: 2250740586417544733, guid: f0c8e1d174294844982172a58f3707a3, type: 3}
       propertyPath: m_Name
       value: Bomb
+      objectReference: {fileID: 0}
+    - target: {fileID: 2250740586417544733, guid: f0c8e1d174294844982172a58f3707a3, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2250740586417544733, guid: f0c8e1d174294844982172a58f3707a3, type: 3}
       propertyPath: m_IsActive
@@ -874,6 +878,10 @@ PrefabInstance:
     - target: {fileID: 4245185367013926388, guid: f0c8e1d174294844982172a58f3707a3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6168043289590008133, guid: f0c8e1d174294844982172a58f3707a3, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0c8e1d174294844982172a58f3707a3, type: 3}
@@ -949,6 +957,10 @@ PrefabInstance:
       value: Bat
       objectReference: {fileID: 0}
     - target: {fileID: 3867885190169425129, guid: 4850f07ff13d2fc409778cb1ce8ed205, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3867885190169425129, guid: 4850f07ff13d2fc409778cb1ce8ed205, type: 3}
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
@@ -977,9 +989,17 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4062039962356567642}
     m_Modifications:
+    - target: {fileID: 2547456773077016419, guid: 143459b73e0b05744be0758aeea4f377, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 3434635343900888593, guid: 143459b73e0b05744be0758aeea4f377, type: 3}
       propertyPath: m_Name
       value: Dynamite
+      objectReference: {fileID: 0}
+    - target: {fileID: 3434635343900888593, guid: 143459b73e0b05744be0758aeea4f377, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3434635343900888593, guid: 143459b73e0b05744be0758aeea4f377, type: 3}
       propertyPath: m_IsActive

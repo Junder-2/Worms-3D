@@ -19,16 +19,16 @@ public class WeaponBomb : Weapon
         base.Start();
     }
 
-    public override bool IsMelee()
-    {
-        return true;
-    }
-
     public override bool CanEquip()
     {
         return amount > 0;
     }
-    
+
+    public override int GetAmount()
+    {
+        return amount;
+    }
+
     public override void UseWeapon(WormController worm)
     {
         StartCoroutine(DelayAction(worm));
@@ -82,11 +82,11 @@ public class WeaponBomb : Weapon
         GameObject thrownBomb = Instantiate(thrownBombPrefab, pos, Quaternion.identity);
         thrownBomb.GetComponent<ExplosionObject>().Instantiate(baseDamage, baseKnockback, fuseTime, explosionRange);
         thrownBomb.GetComponent<Rigidbody>().velocity = throwUp * worm.GetUp() + throwForward * worm.GetForwards();
+
+        yield return new WaitForSeconds(.3f);
+        worm.StopAttackWait();
         
         if(amount <= 0)
             worm.DeEquipWeapon();
-        
-        yield return new WaitForSeconds(.3f);
-        worm.StopAttackWait();
     }
 }
