@@ -35,6 +35,8 @@ public class WormController : MonoBehaviour, IEntity
         public byte currentWeapon;
 
         public float currentWaterLevel;
+
+        public bool currentPlayer;
     }
 
     public PlayerState State;
@@ -583,7 +585,7 @@ public class WormController : MonoBehaviour, IEntity
     void DeathState()
     {
         State.alive = false;
-        ForceEndTurn();
+        if(State.currentPlayer)ForceEndTurn();
         gameObject.SetActive(false);
     }
 

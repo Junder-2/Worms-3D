@@ -15,7 +15,9 @@ public class LevelController : MonoBehaviour
 
     [SerializeField] private GameObject playerPrefab;
 
-    public float roundTimer = 30;
+    //public float roundTimer = 30;
+
+    private float _roundTimer = 30;
 
     private PlayerInput.InputAction _input;
 
@@ -32,6 +34,7 @@ public class LevelController : MonoBehaviour
     void NextPlayer()
     {
         _currentWormController.UpdateInput(new PlayerInput.InputAction());
+        _currentWormController.State.currentPlayer = false;
         
         _lastWorm = _currentWorm;
         _lastPlayer = _currentPlayer;
@@ -51,6 +54,7 @@ public class LevelController : MonoBehaviour
         _currentWormController = _wormsControllers[_currentWorm];
 
         _currentWormController.State.startPos = _currentWormController.transform.position;
+        _currentWormController.State.currentPlayer = true;
         
         _currentWormController.SetPlayerTurn();
 
@@ -86,7 +90,7 @@ public class LevelController : MonoBehaviour
     {
         if (newState == LevelState.playerControl)
         {
-            UIManager.Instance.StartTimerUI(roundTimer, true);
+            UIManager.Instance.StartTimerUI(_roundTimer, true);
         }
         
         _lastLevelState = _levelState;
@@ -107,6 +111,7 @@ public class LevelController : MonoBehaviour
         
         _playerAmount = GameRules.playerAmount;
         _wormsPerPlayer = GameRules.wormsPerPlayer;
+        _roundTimer = GameRules.roundTimer;
         
         _playerInput = GetComponent<PlayerInput>();
         _cameraController = CameraController.Instance;
@@ -178,6 +183,7 @@ public class LevelController : MonoBehaviour
                 newWorm.State.Transform = newWorm.transform;
                 newWorm.State.wormIndex = (byte)j;
                 newWorm.State.playerIndex = (byte)i;
+                newWorm.State.currentPlayer = false;
                 //newWorm.State.maxDistance = maxDistance;
                 newWorm.State.currentWeapon = 0;
                 newWorm.State.currentWaterLevel = 0;
@@ -232,7 +238,7 @@ public class LevelController : MonoBehaviour
         
         _cameraController.UpdateCamera(ref _currentWormController.State, ref _input);
 
-        if (_stateTimer >= roundTimer || _endTurn)
+        if (_stateTimer >= _roundTimer || _endTurn)
             SetState(LevelState.turnEnd);
     }
 
@@ -246,7 +252,7 @@ public class LevelController : MonoBehaviour
             _currentWormController.CancelAction();
             NextPlayer();
             
-            UIManager.Instance.StartTimerUI(roundTimer, false);
+            UIManager.Instance.StartTimerUI(_roundTimer, false);
             camTransitonState = 0;
         }
 

@@ -218,6 +218,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1698330757}
     m_Modifications:
+    - target: {fileID: 676715664126643476, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4578363483642962768, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -294,9 +298,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7807473583029813006, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Name
       value: WormsTotalHealth (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
@@ -684,7 +720,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 31
   m_SortingLayerID: 0
   m_SortingOrder: 1
   m_TargetDisplay: 0
@@ -1316,9 +1352,13 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1698330757}
     m_Modifications:
+    - target: {fileID: 676715664126643476, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3052265852504808266, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
-      propertyPath: m_Sprite
-      value: 
+      propertyPath: m_Type
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4578363483642962768, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Pivot.x
@@ -1396,9 +1436,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7807473583029813006, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Name
       value: WormsTotalHealth
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
@@ -1930,6 +2002,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1698330757}
     m_Modifications:
+    - target: {fileID: 676715664126643476, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4578363483642962768, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2006,9 +2082,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7807473583029813006, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Name
       value: WormsTotalHealth (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
@@ -2148,6 +2256,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1698330757}
     m_Modifications:
+    - target: {fileID: 676715664126643476, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4578363483642962768, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2224,9 +2336,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4876625943077637970, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7807473583029813006, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
       propertyPath: m_Name
       value: WormsTotalHealth (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8980055027454470870, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 699464965dcc3aa4ebcd118910ffb80d, type: 3}
