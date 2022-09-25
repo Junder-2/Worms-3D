@@ -51,6 +51,7 @@ public class WormController : MonoBehaviour, IEntity
     private Animator animator;
 
     [SerializeField] private Material[] playerMat;
+    [SerializeField] private GameObject[] playerHats;
 
     [SerializeField] private Weapon[] weapons;
 
@@ -64,11 +65,19 @@ public class WormController : MonoBehaviour, IEntity
         return _normalVector;
     }
 
-    public void SetPlayer(int num)
+    public void SetPresetLook(int num)
     {
         for (int i = 0; i < _renderer.Length; i++)
         {
             _renderer[i].material = playerMat[num];
+        }
+
+        for (int i = 0; i < playerHats.Length; i++)
+        {
+            if(i == num)
+                playerHats[i].SetActive(true);
+            else
+                playerHats[i].SetActive(false);
         }
     }
 

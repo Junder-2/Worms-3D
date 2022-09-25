@@ -160,9 +160,14 @@ public class LevelController : MonoBehaviour
         float maxMoveSpeed = GameRules.maxSpeed;
         float maxDistance = GameRules.maxDistance;
         float maxHealth = GameRules.wormsMaxHealth;
+
+        int[] presets = {0, 1, 2, 3};
+
+        MathHelper.ShuffleArray(ref presets);
         
         for (int i = 0; i < _playerAmount; i++)
-        {
+        {            
+
             for (int j = 0; j < _wormsPerPlayer; j++)
             {
                 Vector3 spawnPos;
@@ -175,7 +180,7 @@ public class LevelController : MonoBehaviour
 
                 WormController newWorm = Instantiate(playerPrefab, spawnPos, Quaternion.identity).GetComponent<WormController>();
                 
-                newWorm.SetPlayer(i);
+                newWorm.SetPresetLook(presets[i]);
 
                 newWorm.State = new WormController.PlayerState();
                 newWorm.State.maxMoveSpeed = maxMoveSpeed;

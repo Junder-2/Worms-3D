@@ -10,4 +10,20 @@ public static class MathHelper
 
         return value == 0 ? -1 : 1;
     }
+
+    public static void ShuffleArray(ref int[] array)
+    {
+        System.Random rand = new System.Random();
+
+        int count = array.Length;
+
+        for (int i = array.Length-1; i > 1; i--)
+        {
+            int rnd = rand.Next(i+1);
+
+            int value = array[rnd];
+            array[rnd] = array[i];
+            array[i] = value;
+        }
+    }
 }

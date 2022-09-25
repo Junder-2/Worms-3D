@@ -30,6 +30,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: CuteBowBase
+    second: {fileID: 2100000, guid: 50eac9f017e46484591d8c5f45ba6181, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: DynamiteBase
     second: {fileID: 2100000, guid: f0f318a7d2f234740b3a1433eab28043, type: 2}
   - first:
@@ -37,6 +42,31 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: GunBase
     second: {fileID: 2100000, guid: 6a4cceae5ef066f43a469b4c5ef1c5a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SleepyHatBase
+    second: {fileID: 2100000, guid: 42b0440cf93adf94eaf1eb33db1d89f8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SleepyHatPuff
+    second: {fileID: 2100000, guid: fa9972f06908819488b5c931623c9d63, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SmallHatBase
+    second: {fileID: 2100000, guid: 1dbf5bad70244964b967f45f0f05d702, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SmallHatMetal
+    second: {fileID: 2100000, guid: 6d3c35e461e1d714e992126cee767db0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TopHatBase
+    second: {fileID: 2100000, guid: f4230c1fb8d8bac48afd468183aeafe0, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule

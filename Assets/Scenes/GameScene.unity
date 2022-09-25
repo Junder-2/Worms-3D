@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 18a0b1ae0e194f84ea4b7bcebdc59fc8, type: 2}
   m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
@@ -1965,7 +1965,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 1395814330099355276, guid: e4412c0e2f43dca4d9d3b602039e9101, type: 3}
-  roundTimer: 20
   moveRangePrefab: {fileID: 8907336815893005916, guid: a428d4ec570a2ac40adaa7277391a421, type: 3}
   camTopDown: {fileID: 2054323893}
 --- !u!114 &1543092800
