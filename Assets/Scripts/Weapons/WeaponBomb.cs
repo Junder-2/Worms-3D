@@ -37,6 +37,8 @@ public class WeaponBomb : Weapon
     IEnumerator DelayAction(WormController worm)
     {
         yield return new WaitForSeconds(.25f);
+
+        Vector3 pos;
         
         bool aiming = true;
 
@@ -44,12 +46,14 @@ public class WeaponBomb : Weapon
 
         worm.State.freezeCamPitch = true;
 
+        float zoom = 1;
+
         do
         {
             PlayerInput.InputAction input = worm.GetInput();
             if (input.aInput == 1)
             {
-                
+                worm.effects.DisableAimLine();
                 worm.StopAttackWait();
                 StopAllCoroutines();
             }
@@ -57,7 +61,7 @@ public class WeaponBomb : Weapon
             if (input.bInput == 1)
                 aiming = false;
 
-            if (input.moveNonZero)
+            if (input.moveNonZero || input.camNonZero)
             {
                 worm.TurnPlayer(input.rawMoveInput.x*45f*Time.deltaTime);
 
@@ -65,23 +69,45 @@ public class WeaponBomb : Weapon
                 throwUp = Mathf.Max(-.5f, throwUp + input.cameraInput.y * Time.deltaTime*5f);
             }
             
-            Debug.DrawRay(transform.position, throwUp/10*worm.GetUp()+throwForward/10*worm.GetForwards());
+            pos = worm.GetPos() + worm.GetForwards() * .5f;
+            
+            worm.effects.SetLine(pos, throwUp * Vector3.up + throwForward * worm.GetForwards(), 1f);
+
+            zoom = Mathf.MoveTowards(zoom, .9f, Time.deltaTime);
+            worm.SetCamZoom(zoom);
+            
+            //Debug.DrawRay(transform.position, throwUp/10*worm.GetUp()+throwForward/10*worm.GetForwards());
 
             yield return null;
 
         } while (aiming);
+
+        float lastZoom = zoom;
         
         worm.SetAnimTrigger("Throw");
 
-        yield return new WaitForSeconds(.31f);
+        //yield return new WaitForSeconds(.31f);
+
+        float timer = 0;
+        
+        do
+        {
+            timer += Time.deltaTime/.31f;
+            zoom = Mathf.Lerp(lastZoom, 1, timer);
+            worm.SetCamZoom(zoom);
+                    
+            yield return null;
+        } while (timer < 1);
 
         amount--;
+        
+        worm.effects.DisableAimLine();
 
-        Vector3 pos = worm.GetPos() + worm.GetForwards() * .5f;
+        pos = worm.GetPos() + worm.GetForwards() * .5f;
 
         GameObject thrownBomb = Instantiate(thrownBombPrefab, pos, Quaternion.identity);
         thrownBomb.GetComponent<ExplosionObject>().Instantiate(baseDamage, baseKnockback, fuseTime, explosionRange);
-        thrownBomb.GetComponent<Rigidbody>().velocity = throwUp * worm.GetUp() + throwForward * worm.GetForwards();
+        thrownBomb.GetComponent<Rigidbody>().velocity = throwUp * Vector3.up + throwForward * worm.GetForwards();
 
         yield return new WaitForSeconds(.3f);
         worm.StopAttackWait();

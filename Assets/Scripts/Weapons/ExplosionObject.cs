@@ -29,7 +29,7 @@ public class ExplosionObject : MonoBehaviour, IEntity
         _rb.isKinematic = true;
         bombMesh.SetActive(false);
         explosionEffect.SetActive(true);
-        explosionEffect.transform.localScale = Vector3.one*_explosionRange;
+        explosionEffect.transform.localScale = Vector3.one*(_explosionRange*2);
 
         Collider[] hits;
 

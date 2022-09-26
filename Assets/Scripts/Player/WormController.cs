@@ -4,13 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(WormsEffects))]
 public class WormController : MonoBehaviour, IEntity
 {
+    private const float slopeLimit = .65f;
+    
     public struct PlayerState
     {
         public Transform Transform;
         
-        public float camYaw, camPitch;
+        public float camYaw, camPitch, camZoom;
 
         public Vector3 camPos, camRot;
 
@@ -40,17 +43,20 @@ public class WormController : MonoBehaviour, IEntity
     }
 
     public PlayerState State;
+
+    [HideInInspector] public WormsEffects effects;  
     
     [SerializeField] 
-        private Renderer[] _renderer;
+        private Renderer _renderer;
 
     [SerializeField] 
         private Transform model;
 
-    private Rigidbody rb;
-    private Animator animator;
+    private Rigidbody _rb;
+    private Animator _animator;
 
-    [SerializeField] private Material[] playerMat;
+    private Material _skinMat, _eyeMat;
+    
     [SerializeField] private GameObject[] playerHats;
 
     [SerializeField] private Weapon[] weapons;
@@ -67,10 +73,13 @@ public class WormController : MonoBehaviour, IEntity
 
     public void SetPresetLook(int num)
     {
-        for (int i = 0; i < _renderer.Length; i++)
-        {
-            _renderer[i].material = playerMat[num];
-        }
+        _skinMat = _renderer.materials[0];
+        _eyeMat = _renderer.materials[1];
+        
+        Color32 color = GameRules.playerPresetColors[num];
+
+        _skinMat.color = color;
+        _eyeMat.color = color;
 
         for (int i = 0; i < playerHats.Length; i++)
         {
@@ -84,11 +93,13 @@ public class WormController : MonoBehaviour, IEntity
     private void Awake()
     {
         _maxHealth = GameRules.wormsMaxHealth;
-        rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
+        _rb = GetComponent<Rigidbody>();
+        _animator = GetComponent<Animator>();
         _grounded = true;
         _forwardVector = Vector3.forward;
         _normalVector = Vector3.up;
+
+        effects = GetComponent<WormsEffects>();
 
         UpdateInput(new PlayerInput.InputAction());
     }
@@ -135,6 +146,7 @@ public class WormController : MonoBehaviour, IEntity
 
         State.freezeCamPitch = false;
         State.freezeCamYaw = false;
+        effects.SetSmokeParticles(false);
 
         _stateTimer = 0;
         _deltaTime = 0;
@@ -214,7 +226,7 @@ public class WormController : MonoBehaviour, IEntity
     {
         RaycastHit hit;
 
-        Vector3 oldPos = rb.position;
+        Vector3 oldPos = _rb.position;
         
         Vector3 pos = oldPos+State.velocity*_deltaTime;
 
@@ -248,7 +260,7 @@ public class WormController : MonoBehaviour, IEntity
     {
         RaycastHit hit;
         
-        Vector3 oldPos = rb.position;
+        Vector3 oldPos = _rb.position;
 
         Vector3 pos = oldPos + State.velocity * _deltaTime;
         
@@ -280,6 +292,11 @@ public class WormController : MonoBehaviour, IEntity
 
                 _bonk = true;
             }
+            else if (hit.point.y < _floorLevel && dist <= .5f)
+            {
+                pos += hit.normal * (.5f-dist);
+                pos -= _slopeVector * (.5f * _deltaTime * Physics.gravity.y * _steepness);
+            }
         }
 
         transform.position = (pos);
@@ -288,6 +305,9 @@ public class WormController : MonoBehaviour, IEntity
     private Weapon _currentWeapon;
     void SwitchWeapon(bool setZero = false)
     {
+        if(_attackWait)
+            return;
+        
         if(_currentWeapon != null)_currentWeapon.gameObject.SetActive(false);
         
         ref var curr = ref State.currentWeapon;
@@ -374,8 +394,8 @@ public class WormController : MonoBehaviour, IEntity
         {
             _unlockRotation = false;
             _rotationVelocity = Vector3.zero;
-            animator.SetBool("Grounded", true);
-            animator.SetBool("Walk", false);
+            _animator.SetBool("Grounded", true);
+            _animator.SetBool("Walk", false);
 
             State.velocity = Vector3.zero;
             
@@ -390,7 +410,7 @@ public class WormController : MonoBehaviour, IEntity
             return;
         }
 
-        if (_steepness > .5f)
+        if (_steepness > slopeLimit)
         {
             SetState(WormState.slide);
             return;
@@ -422,8 +442,8 @@ public class WormController : MonoBehaviour, IEntity
     {
         if(_stateTimer == 0)
         {
-            animator.SetBool("Grounded", true);
-            animator.SetBool("Walk", true);
+            _animator.SetBool("Grounded", true);
+            _animator.SetBool("Walk", true);
         }
 
         if (!_input.moveNonZero)
@@ -440,7 +460,7 @@ public class WormController : MonoBehaviour, IEntity
 
         forwardVel += maxSpeed * .4f * _deltaTime;
 
-        animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
+        _animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
 
         if (forwardVel > maxSpeed)
             forwardVel = maxSpeed;
@@ -462,7 +482,7 @@ public class WormController : MonoBehaviour, IEntity
             return;
         }
         
-        if (_steepness > .5f)
+        if (_steepness > slopeLimit)
         {
             SetState(WormState.slide);
             return;
@@ -490,7 +510,7 @@ public class WormController : MonoBehaviour, IEntity
             return;
         }
         
-        if (_steepness < .5f)
+        if (_steepness < slopeLimit)
         {
             SetState(WormState.idle);
             return;
@@ -524,8 +544,8 @@ public class WormController : MonoBehaviour, IEntity
     {
         if(_stateTimer == 0)
         {
-            animator.SetBool("Grounded", false);
-            animator.SetTrigger("Jump");
+            _animator.SetBool("Grounded", false);
+            _animator.SetTrigger("Jump");
         }
 
         if (_stateTimer < .2f)
@@ -560,7 +580,7 @@ public class WormController : MonoBehaviour, IEntity
     {
         if(_stateTimer == 0)
         {
-            animator.SetBool("Grounded", false);
+            _animator.SetBool("Grounded", false);
         }
         ApplyAirForce(1);
         AirPhysicsStep();
@@ -572,7 +592,11 @@ public class WormController : MonoBehaviour, IEntity
         }
     }
 
-    public void StopAttackWait() => _attackWait = false;
+    public void StopAttackWait()
+    {
+        _attackWait = false;
+        SetCamZoom(1);
+    } 
     private bool _attackWait;
     void AttackState()
     {
@@ -583,12 +607,10 @@ public class WormController : MonoBehaviour, IEntity
             return;
         }
 
-        if (!_attackWait)
-        {
-            UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
-            SetState(WormState.idle);
-            return;
-        }
+        if (_attackWait) return;
+        UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
+        SetState(WormState.idle);
+        return;
     }
 
     void DeathState()
@@ -603,9 +625,16 @@ public class WormController : MonoBehaviour, IEntity
         LevelController.Instance.ForceTurnEnd();
     }
 
+    public void SetCamZoom(float value)
+    {
+        value = Mathf.Max(0, value);
+        
+        State.camZoom = value;
+    }
+
     public void SetAnimTrigger(string anim)
     {
-        animator.SetTrigger(anim);
+        _animator.SetTrigger(anim);
     }
 
     public void DeEquipWeapon()
@@ -616,6 +645,8 @@ public class WormController : MonoBehaviour, IEntity
 
     public void CancelAction()
     {
+        SetCamZoom(1);
+        
         if(_currentWeapon != null)
             _currentWeapon.CancelWeapon(this);
     }
@@ -632,6 +663,7 @@ public class WormController : MonoBehaviour, IEntity
 
         _rotationVelocity = angles;
         SetState(WormState.freefall);
+        effects.SetSmokeParticles(true);
 
         State.velocity += force;
         State.health = Mathf.Max(State.health - amount, 0);

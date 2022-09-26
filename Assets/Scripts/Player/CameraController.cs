@@ -29,6 +29,7 @@ public class CameraController : MonoBehaviour
 
         yaw = Random.Range(0f, 360f);
         pitch = Random.Range(-30f, -15f);
+        playerState.camZoom = 1;
 
         playerState.camRot = new Vector3(-pitch, yaw, 0);
 
@@ -37,7 +38,7 @@ public class CameraController : MonoBehaviour
             Mathf.Sin(pitch * Mathf.Deg2Rad) * camOffset,
             Mathf.Cos(yaw * Mathf.Deg2Rad) * camOffset * Mathf.Cos(pitch * Mathf.Deg2Rad));
 
-        playerState.camPos = wormController.gameObject.transform.position + camPos;
+        playerState.camPos = camPos;
     }
 
     private const float floorOffset = .5f;
@@ -55,6 +56,8 @@ public class CameraController : MonoBehaviour
         if(!playerState.freezeCamPitch)
             pitch -= inputs.cameraInput.y * deltaTime * turnSpeed.y;
 
+        float offset = camOffset * playerState.camZoom;
+
         yaw %= 360;
         pitch = Mathf.Clamp(pitch, -90f, 90f);
 
@@ -64,9 +67,11 @@ public class CameraController : MonoBehaviour
         float cosYaw = Mathf.Cos(yaw * Mathf.Deg2Rad);
 
         Vector3 camPos = new Vector3(
-            sinYaw * camOffset * Mathf.Cos(pitch * Mathf.Deg2Rad),
-            Mathf.Sin(pitch * Mathf.Deg2Rad) * camOffset,
-            cosYaw * camOffset * Mathf.Cos(pitch * Mathf.Deg2Rad));
+            sinYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad),
+            Mathf.Sin(pitch * Mathf.Deg2Rad) * offset,
+            cosYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad));
+        
+        camPos += Vector3.up*floorOffset;
 
         RaycastHit hit;
         
@@ -109,9 +114,9 @@ public class CameraController : MonoBehaviour
         cosYaw = Mathf.Cos(yaw * Mathf.Deg2Rad);
 
         camPos = new Vector3(
-            sinYaw * camOffset * Mathf.Cos(pitch * Mathf.Deg2Rad)*zoomMulti,
+            sinYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad)*zoomMulti,
             camPos.y,
-            cosYaw * camOffset * Mathf.Cos(pitch * Mathf.Deg2Rad)*zoomMulti);
+            cosYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad)*zoomMulti);
         
         newPos = playerState.Transform.position + camPos;
 
@@ -120,7 +125,7 @@ public class CameraController : MonoBehaviour
 
         playerState.camYaw = yaw;
         playerState.camPitch = pitch;
-        playerState.camPos = newPos;
+        playerState.camPos = camPos;
         playerState.camRot = transform.eulerAngles;
 
         inputs.camYaw = yaw;
@@ -144,9 +149,9 @@ public class CameraController : MonoBehaviour
         transform.eulerAngles = Vector3.Slerp(startCamRot, targetCamRot, t);
 
         return t >= 1;*/
+        var position = transform.position;
         
         float distance = Mathf.Max(Vector3.Distance(startCamPos, targetCamPos), Single.Epsilon);
-        var position = transform.position;
 
         float t = 1 - Mathf.Clamp01(Vector3.Distance(position, targetCamPos)/distance);
 

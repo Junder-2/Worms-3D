@@ -261,14 +261,19 @@ public class LevelController : MonoBehaviour
             camTransitonState = 0;
         }
 
+        
+
         var lastPlayer = _wormsControllers[_lastWorm].State;
         var currentPlayer = _currentWormController.State;
+        
+        var lastCamPos = _wormsControllers[_lastWorm].transform.position + lastPlayer.camPos;
+        var targetCamPos = _currentWormController.transform.position + currentPlayer.camPos;
 
         switch (camTransitonState)
         {
             case 0:
             {
-                bool finished = _cameraController.TransitionCamera(lastPlayer.camPos, camTopDown.position, lastPlayer.camRot,
+                bool finished = _cameraController.TransitionCamera(lastCamPos, camTopDown.position, lastPlayer.camRot,
                     camTopDown.eulerAngles, Time.deltaTime);
                 camTransitonState = finished ? (byte)1 : (byte)0;
                 break;
@@ -278,7 +283,7 @@ public class LevelController : MonoBehaviour
                 break;
             case 2:
             {
-                bool finished = _cameraController.TransitionCamera(camTopDown.position, currentPlayer.camPos, camTopDown.eulerAngles,
+                bool finished = _cameraController.TransitionCamera(camTopDown.position, targetCamPos, camTopDown.eulerAngles,
                     currentPlayer.camRot, Time.deltaTime);
                 camTransitonState = finished ? (byte)3 : (byte)2;
                 break;

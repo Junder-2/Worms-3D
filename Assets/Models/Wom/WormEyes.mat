@@ -80,6 +80,7 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _Blend: 0
+    - _Blink: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -89,6 +90,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
+    - _EyeLidTilt: 0
     - _FresnelFactor: 2.21
     - _FresnelStrength: 0.18
     - _GlossMapScale: 1
@@ -119,6 +121,7 @@ Material:
     - _EyeColor: {r: 0.06835171, g: 0.11217893, b: 0.18867922, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
+    - _WormColor: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2893601319727031377
 MonoBehaviour:

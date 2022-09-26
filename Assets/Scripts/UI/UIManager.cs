@@ -56,7 +56,7 @@ public class UIManager : MonoBehaviour
 
         for (int i = 0; i < playerAmount; i++)
         {
-            UIMatCopy.SetColor("_Color", GameRules.playerColors[i]);
+            UIMatCopy.SetColor("_Color", GameRules.playerUIColors[i]);
             _healthUIMat[i] = new Material(UIMatCopy);
 
             playerHealth[i].material = _healthUIMat[i];

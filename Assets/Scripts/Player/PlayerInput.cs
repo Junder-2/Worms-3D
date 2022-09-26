@@ -21,6 +21,7 @@ public class PlayerInput : MonoBehaviour
         public float camYaw;
 
         public bool moveNonZero;
+        public bool camNonZero;
 
         //public float deltaTime;
         //public float fixedDeltatime;
@@ -74,6 +75,7 @@ public class PlayerInput : MonoBehaviour
         input.rawMoveInput = _moveInput;
 
         input.moveNonZero = _moveInput.magnitude > .1f;
+        input.camNonZero = _cameraInput.magnitude > .1f;
 
         input.moveInput = new Vector2(_moveInput.x * camCos + _moveInput.y * camSin,
             -_moveInput.x * camSin + _moveInput.y * camCos);

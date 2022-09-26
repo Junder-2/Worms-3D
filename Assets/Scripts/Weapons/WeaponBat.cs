@@ -26,8 +26,13 @@ public class WeaponBat : Weapon
         Vector3 wormPos = worm.GetPos();
         Vector3 wormForwards = worm.GetForwards();
 
+        float timer = 0;
+
         bool chargeBat = true;
         float chargeStrength = 1f;
+        float zoom = 1f;
+
+        float lastZoom;
 
         yield return new WaitForSeconds(.2f);
 
@@ -40,6 +45,9 @@ public class WeaponBat : Weapon
             else
             {
                 chargeStrength += Time.deltaTime;
+                zoom -= Time.deltaTime / 3;
+                
+                worm.SetCamZoom(zoom);
                 if (chargeStrength > 2)
                 {
                     chargeBat = false;
@@ -48,6 +56,8 @@ public class WeaponBat : Weapon
             }
             yield return null;
         } while (chargeBat);
+
+        lastZoom = zoom;
 
         if (Physics.Raycast(wormPos, wormForwards, out hit, 5f))
         {
@@ -64,6 +74,8 @@ public class WeaponBat : Weapon
                 }
 
                 dist = Mathf.Clamp01(2 - dist);
+
+                wormPos.y -= .25f;
                 
                 Vector3 force = (entity.GetPos() - wormPos).normalized * baseKnockback + Vector3.up*launchKnockback;
                 
@@ -74,15 +86,34 @@ public class WeaponBat : Weapon
                 dist *= chargeStrength;
         
                 entity.Damage(baseDamage*dist, force*dist);
-
-                yield return new WaitForSeconds(.2f);
+                
+                //yield return new WaitForSeconds(.2f);
+                do
+                {
+                    timer += Time.deltaTime/.2f;
+                    zoom = Mathf.Lerp(lastZoom, 1, timer);
+                    worm.SetCamZoom(zoom);
+                    
+                    yield return null;
+                } while (timer < 1);
+                
                 worm.StopAttackWait();
             }
         }
         else
         {
             worm.SetAnimTrigger("SwingB");
-            yield return new WaitForSeconds(.75f);
+            //yield return new WaitForSeconds(.75f);
+            
+            do
+            {
+                timer += Time.deltaTime/.75f;
+                zoom = Mathf.Lerp(lastZoom, 1, timer);
+                worm.SetCamZoom(zoom);
+                    
+                yield return null;
+            } while (timer < 1);
+            
             worm.StopAttackWait();
         }
     }
