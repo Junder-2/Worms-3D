@@ -31,8 +31,7 @@ public class UIWeaponIcon : MonoBehaviour
     public void SetAmount(int amount)
     {
         amountText.text = amount < 0 ? "" : amount.ToString();
-        
-        if(amount == 0)
-            SetAvailability(false);
+
+        SetAvailability(amount != 0);
     }
 }

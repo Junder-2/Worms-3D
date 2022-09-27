@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WormsEffects : MonoBehaviour
 {
@@ -11,11 +12,22 @@ public class WormsEffects : MonoBehaviour
 
     [SerializeField] private ParticleSystem smokeParticles;
 
+    [SerializeField]
+        private Image healthUI;
+
+    [SerializeField] 
+        private GameObject highlight;
+
+    private Material _healthMat;
+    
+    private static readonly int HealthValuesA = Shader.PropertyToID("_HealthValuesA");
+    private static readonly int HealthValuesB = Shader.PropertyToID("_HealthValuesB");
+
     private void Start()
     {
         aimLine.positionCount = lineResolution;
         DisableAimLine();
-        
+        SetHighlight(false);
     }
 
     public void SetLine(Vector3 startPos, Vector3 vel, float timeRange)
@@ -45,4 +57,23 @@ public class WormsEffects : MonoBehaviour
         else
             smokeParticles.Stop();
     }
+
+    public void InstanceHealthUI(byte playerIndex)
+    {
+        _healthMat = new Material(healthUI.material);
+        
+        _healthMat.SetFloat("_MaximumHealth", 1);
+        _healthMat.SetColor("_Color", GameRules.playerUIColors[playerIndex]);
+        _healthMat.SetVector(HealthValuesA, new Vector4(1,0,0,0));
+        _healthMat.SetVector(HealthValuesB, Vector4.zero);
+
+        healthUI.material = _healthMat;
+    }
+    
+    public void SetHealthUI(float value)
+    {
+        _healthMat.SetVector(HealthValuesA, new Vector4(value,0,0,0));
+    }
+
+    public void SetHighlight(bool value) => highlight.SetActive(value);
 }

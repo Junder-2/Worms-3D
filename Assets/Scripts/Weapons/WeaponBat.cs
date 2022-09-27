@@ -6,11 +6,6 @@ using UnityEngine;
 public class WeaponBat : Weapon
 {
     [SerializeField] private float launchKnockback;
-    
-    public override bool CanEquip()
-    {
-        return base.CanEquip();
-    }
 
     public override void UseWeapon(WormController worm)
     {

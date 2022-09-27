@@ -15,8 +15,6 @@ public class LevelController : MonoBehaviour
 
     [SerializeField] private GameObject playerPrefab;
 
-    //public float roundTimer = 30;
-
     private float _roundTimer = 30;
 
     private PlayerInput.InputAction _input;
@@ -52,31 +50,19 @@ public class LevelController : MonoBehaviour
 
         _currentWorm = (byte)(newWorm + _currentPlayer*_wormsPerPlayer);
         _currentWormController = _wormsControllers[_currentWorm];
-
-        _currentWormController.State.startPos = _currentWormController.transform.position;
+        
         _currentWormController.State.currentPlayer = true;
         
-        _currentWormController.SetPlayerTurn();
+        _currentWormController.SetPlayerTurn(PlayerData[_currentPlayer]);
 
         //DisplayMoveRange();
-    }
-
-    [SerializeField] 
-        private GameObject moveRangePrefab;
-
-        private GameObject _moveRange;
-    void DisplayMoveRange()
-    {
-        Vector3 pos = _currentWormController.State.startPos;
-        
-        _moveRange.SetActive(true);
-        _moveRange.transform.position = pos;
-        _moveRange.transform.localScale = Vector3.one*(GameRules.maxDistance*2);
     }
 
     private WormController[] _wormsControllers;
 
     private WormController _currentWormController;
+
+    public PlayerInfo.PlayerData[] PlayerData;
 
     public enum LevelState {startGame, playerControl, turnEnd}
 
@@ -115,10 +101,7 @@ public class LevelController : MonoBehaviour
         
         _playerInput = GetComponent<PlayerInput>();
         _cameraController = CameraController.Instance;
-        
-        _moveRange = Instantiate(moveRangePrefab, Vector3.zero, Quaternion.identity);
-        _moveRange.SetActive(false);
-        
+
         SetState(LevelState.startGame);
     }
 
@@ -154,6 +137,7 @@ public class LevelController : MonoBehaviour
 
     void StartGameState()
     {
+        PlayerData = new PlayerInfo.PlayerData[_playerAmount];
         _wormsControllers = new WormController[_playerAmount * _wormsPerPlayer];
 
         float jumpHeight = GameRules.jumpHeight;
@@ -166,7 +150,8 @@ public class LevelController : MonoBehaviour
         MathHelper.ShuffleArray(ref presets);
         
         for (int i = 0; i < _playerAmount; i++)
-        {            
+        {
+            PlayerData[i].worms = new byte[_wormsPerPlayer];
 
             for (int j = 0; j < _wormsPerPlayer; j++)
             {
@@ -181,27 +166,36 @@ public class LevelController : MonoBehaviour
                 WormController newWorm = Instantiate(playerPrefab, spawnPos, Quaternion.identity).GetComponent<WormController>();
                 
                 newWorm.SetPresetLook(presets[i]);
+                newWorm.effects.InstanceHealthUI((byte)i);
 
-                newWorm.State = new WormController.PlayerState();
-                newWorm.State.maxMoveSpeed = maxMoveSpeed;
-                newWorm.State.jumpHeight = jumpHeight;
-                newWorm.State.Transform = newWorm.transform;
-                newWorm.State.wormIndex = (byte)j;
-                newWorm.State.playerIndex = (byte)i;
-                newWorm.State.currentPlayer = false;
-                //newWorm.State.maxDistance = maxDistance;
-                newWorm.State.currentWeapon = 0;
-                newWorm.State.currentWaterLevel = 0;
-                newWorm.State.alive = true;
-                newWorm.State.startPos = spawnPos;
-                newWorm.State.health = maxHealth;
+                newWorm.State = new PlayerInfo.WormState
+                {
+                    maxMoveSpeed = maxMoveSpeed,
+                    jumpHeight = jumpHeight,
+                    Transform = newWorm.transform,
+                    wormIndex = (byte)j,
+                    playerIndex = (byte)i,
+                    currentPlayer = false,
+                    currentWeapon = 0,
+                    currentWaterLevel = 0,
+                    alive = true,
+                    health = maxHealth
+                };
 
                 _cameraController.InstantiateWormCam(ref newWorm);
 
                 _wormsControllers[_wormsPerPlayer * i + j] = newWorm;
+                PlayerData[i].worms[j] = (byte)(_wormsPerPlayer * i + j);
             }
         }
-        
+
+        int[] weaponAmount = _wormsControllers[0].GetWeaponsAmount(true);
+
+        for (int i = 0; i < _playerAmount; i++)
+        {
+            PlayerData[i].weaponAmount = weaponAmount;
+        }
+
         UIManager.Instance.SetPlayersHealth(_playerAmount, _wormsPerPlayer, maxHealth);
 
         _currentPlayer = (byte)Random.Range(0, _playerAmount);
@@ -255,13 +249,11 @@ public class LevelController : MonoBehaviour
         if (_stateTimer == 0)
         {
             _currentWormController.CancelAction();
-            NextPlayer();
-            
+            PlayerData[_currentPlayer].weaponAmount = _currentWormController.GetWeaponsAmount();
+
             UIManager.Instance.StartTimerUI(_roundTimer, false);
             camTransitonState = 0;
         }
-
-        
 
         var lastPlayer = _wormsControllers[_lastWorm].State;
         var currentPlayer = _currentWormController.State;
@@ -269,23 +261,35 @@ public class LevelController : MonoBehaviour
         var lastCamPos = _wormsControllers[_lastWorm].transform.position + lastPlayer.camPos;
         var targetCamPos = _currentWormController.transform.position + currentPlayer.camPos;
 
+        bool finished = false;
         switch (camTransitonState)
         {
             case 0:
             {
-                bool finished = _cameraController.TransitionCamera(lastCamPos, camTopDown.position, lastPlayer.camRot,
+                finished = _cameraController.TransitionCamera(lastCamPos, camTopDown.position, lastPlayer.camRot,
                     camTopDown.eulerAngles, Time.deltaTime);
                 camTransitonState = finished ? (byte)1 : (byte)0;
+
+                if (finished)
+                {
+                    NextPlayer();
+                    _currentWormController.effects.SetHighlight(true);
+                }
                 break;
             }
             case 1:
-                camTransitonState = _input.aInput == 1 ? (byte)2 : (byte)1;
+                finished = _input.aInput == 1;
+                
+                camTransitonState = finished ? (byte)2 : (byte)1;
                 break;
             case 2:
             {
-                bool finished = _cameraController.TransitionCamera(camTopDown.position, targetCamPos, camTopDown.eulerAngles,
+                finished = _cameraController.TransitionCamera(camTopDown.position, targetCamPos, camTopDown.eulerAngles,
                     currentPlayer.camRot, Time.deltaTime);
                 camTransitonState = finished ? (byte)3 : (byte)2;
+                
+                if(finished)
+                    _currentWormController.effects.SetHighlight(false);
                 break;
             }
         }

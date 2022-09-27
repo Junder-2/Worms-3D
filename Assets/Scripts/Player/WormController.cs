@@ -7,42 +7,7 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(WormsEffects))]
 public class WormController : MonoBehaviour, IEntity
 {
-    private const float slopeLimit = .65f;
-    
-    public struct PlayerState
-    {
-        public Transform Transform;
-        
-        public float camYaw, camPitch, camZoom;
-
-        public Vector3 camPos, camRot;
-
-        public float maxMoveSpeed;
-        public float jumpHeight;
-
-        public float health;
-        public bool alive;
-
-        public byte wormIndex, playerIndex;
-
-        public Vector3 velocity;
-
-        public Vector3 startPos;
-
-        public bool freezeCamPitch;
-
-        public bool freezeCamYaw;
-        //public float maxDistance;
-        //public float floorLevel;
-
-        public byte currentWeapon;
-
-        public float currentWaterLevel;
-
-        public bool currentPlayer;
-    }
-
-    public PlayerState State;
+    public PlayerInfo.WormState State;
 
     [HideInInspector] public WormsEffects effects;  
     
@@ -51,45 +16,32 @@ public class WormController : MonoBehaviour, IEntity
 
     [SerializeField] 
         private Transform model;
+    [SerializeField] 
+        private GameObject[] playerHats;
 
+    [SerializeField] 
+        private Weapon[] weapons;
+
+        private Material _skinMat, _eyeMat;
+    
     private Rigidbody _rb;
     private Animator _animator;
-
-    private Material _skinMat, _eyeMat;
     
-    [SerializeField] private GameObject[] playerHats;
+    private Vector3 _normalVector;
+    private Vector3 _forwardVector;
+    private Vector3 _slopeVector;
+    private float _floorLevel;
+    private float _steepness;
+    private float forwardVel = 0;
 
-    [SerializeField] private Weapon[] weapons;
+    private float _maxHealth;
+    private bool _holdJump;
+    private bool _bonk;
+    public bool _grounded;
 
-    public Vector3 GetForwards()
-    {
-        return Vector3.ProjectOnPlane(_forwardVector, _normalVector);
-    }
-
-    public Vector3 GetUp()
-    {
-        return _normalVector;
-    }
-
-    public void SetPresetLook(int num)
-    {
-        _skinMat = _renderer.materials[0];
-        _eyeMat = _renderer.materials[1];
-        
-        Color32 color = GameRules.playerPresetColors[num];
-
-        _skinMat.color = color;
-        _eyeMat.color = color;
-
-        for (int i = 0; i < playerHats.Length; i++)
-        {
-            if(i == num)
-                playerHats[i].SetActive(true);
-            else
-                playerHats[i].SetActive(false);
-        }
-    }
-
+    private bool _unlockRotation;
+    private Vector3 _rotationVelocity;
+    
     private void Awake()
     {
         _maxHealth = GameRules.wormsMaxHealth;
@@ -104,80 +56,99 @@ public class WormController : MonoBehaviour, IEntity
         UpdateInput(new PlayerInput.InputAction());
     }
     
-    public enum WormState{idle, moving, jump, freefall, slide, attack, death}
-
-    private WormState _previousState;
-    public WormState _currentState;
-
-    private float _stateTimer;
-
-    private Vector3 _normalVector;
-    private Vector3 _forwardVector;
-    private Vector3 _slopeVector;
-    private float _floorLevel;
-    private float _steepness;
-
-    private float _maxHealth;
-
-    private bool _unlockRotation;
-    private Vector3 _rotationVelocity;
-
-    void SetState(WormState state)
+    private float _deltaTime;
+    private void FixedUpdate()
     {
-        if (_currentState == WormState.moving && state != WormState.jump)
-            forwardVel = 0;
+        _deltaTime = Time.fixedDeltaTime;
+        UpdateCharacterState();
+    }
 
-        if(_currentState == WormState.jump)
-            forwardVel = 0;
+    public void SetPresetLook(int num)
+    {
+        _skinMat = _renderer.materials[0];
+        _eyeMat = _renderer.materials[1];
+        
+        Color32 color = GameRules.playerPresetColors[num];
 
-        if (state == WormState.jump)
+        _skinMat.color = color;
+        _eyeMat.color = color;
+
+        for (int i = 0; i < playerHats.Length; i++)
         {
-            _grounded = false;
-            RotateModel(Quaternion.LookRotation(_forwardVector, Vector3.up), true);
-            State.velocity.y = State.jumpHeight;
-            _holdJump = true;
+            playerHats[i].SetActive(i == num);
+        }
+    }
+    
+    private PlayerInput.InputAction _input;
+    public void UpdateInput(PlayerInput.InputAction input) => _input = input;
+
+    public PlayerInput.InputAction GetInput() => _input;
+
+    private Weapon _currentWeapon;
+
+    private void SwitchWeapon(bool setZero = false)
+    {
+        if(_attackWait)
+            return;
+        
+        if(State.currentWeapon != 0)_currentWeapon.gameObject.SetActive(false);
+        
+        ref var curr = ref State.currentWeapon;
+        curr++;
+
+        if (setZero)
+            curr = 0;
+        
+        if (weapons.Length < curr)
+            curr = 0;
+
+        if (curr == 0)
+        {
+            UIManager.Instance.UpdateWeaponUI(-1, 0);
+            return;
         }
         
-        _bonk = false;
+        _currentWeapon = weapons[curr - 1];
+
+        if (!_currentWeapon.CanEquip())
+        {
+            SwitchWeapon();
+            return;
+        }
+
+        _currentWeapon.gameObject.SetActive(true);
         
-        _previousState = _currentState;
-
-        _currentState = state;
-
-        State.freezeCamPitch = false;
-        State.freezeCamYaw = false;
-        effects.SetSmokeParticles(false);
-
-        _stateTimer = 0;
-        _deltaTime = 0;
+        UIManager.Instance.UpdateWeaponUI(curr-1, _currentWeapon.GetAmount());
     }
-
-    private PlayerInput.InputAction _input;
-    public void UpdateInput(PlayerInput.InputAction input)
+    
+    public void DeEquipWeapon()
     {
-        _input = input;
+        UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
+        SwitchWeapon(true);
     }
-
-    public void SetPlayerTurn()
+    
+    public int[] GetWeaponsAmount(bool instantiate = false)
     {
         int[] weaponAmount = new int[weapons.Length];
-
+        
         for (int i = 0; i < weaponAmount.Length; i++)
         {
-            weaponAmount[i] = weapons[i].GetAmount();
+            weaponAmount[i] = instantiate ? weapons[i].GetBaseAmount() : weapons[i].GetAmount();
         }
-        
-        UIManager.Instance.InstanceWeaponUI(weaponAmount, State.currentWeapon-1);
+
+        return weaponAmount;
     }
 
-    public PlayerInput.InputAction GetInput()
+    public void SetPlayerTurn(PlayerInfo.PlayerData data)
     {
-        return _input;
+        for (int i = 0; i < data.weaponAmount.Length; i++)
+        {
+            weapons[i].SetAmount((byte)data.weaponAmount[i]);
+        }
+
+        UIManager.Instance.InstanceWeaponUI(GetWeaponsAmount(), State.currentWeapon-1);
     }
-
-    private bool _holdJump;
-    private bool _bonk;
-
+    
     public void TurnPlayer(float amount)
     {
         _forwardVector = Quaternion.Euler(0, amount, 0)*_forwardVector;
@@ -189,6 +160,293 @@ public class WormController : MonoBehaviour, IEntity
         model.rotation = instant ? target : Quaternion.RotateTowards(model.rotation, target, _deltaTime * 360f);
     }
 
+    #region StateMachine
+    
+    public enum ActionState{idle, moving, jump, freefall, slide, attack, death}
+
+    private ActionState _previousState;
+    private ActionState _currentState;
+
+    private float _stateTimer;
+    void SetState(ActionState state)
+    {
+        if (_currentState == ActionState.moving && state != ActionState.jump)
+            forwardVel = 0;
+
+        if(_currentState == ActionState.jump)
+            forwardVel = 0;
+
+        if (state == ActionState.jump)
+        {
+            _grounded = false;
+            RotateModel(Quaternion.LookRotation(_forwardVector, Vector3.up), true);
+            State.velocity.y = State.jumpHeight;
+            _holdJump = true;
+        }
+        
+        _previousState = _currentState;
+
+        _currentState = state;
+
+        State.freezeCamPitch = false;
+        State.freezeCamYaw = false;
+        effects.SetSmokeParticles(false);
+        _bonk = false;
+
+        _stateTimer = 0;
+        _deltaTime = 0;
+    }
+
+    void IdleState()
+    {
+        if(_stateTimer == 0)
+        {
+            _unlockRotation = false;
+            _rotationVelocity = Vector3.zero;
+            _animator.SetBool("Grounded", true);
+            _animator.SetBool("Walk", false);
+
+            State.velocity = Vector3.zero;
+            
+            GroundPhysicsStep();
+            
+            RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector), true);
+        }
+
+        if (!_grounded)
+        {
+            SetState(ActionState.freefall);
+            return;
+        }
+
+        if (_steepness > PlayerInfo.SlopeLimit)
+        {
+            SetState(ActionState.slide);
+            return;
+        }
+
+        if (_input.moveNonZero)
+        {
+            SetState(ActionState.moving);
+            return;
+        }
+
+        if (_input.aInput == 1)
+        {
+            SetState(ActionState.jump);
+            return;
+        }
+
+        if (_input.bInput == 1 && State.currentWeapon != 0)
+        {
+            SetState(ActionState.attack);
+            return;
+        }
+        
+        if(_input.xInput == 1)
+            SwitchWeapon();
+            
+    }
+    
+    void MoveState()
+    {
+        if(_stateTimer == 0)
+        {
+            _animator.SetBool("Grounded", true);
+            _animator.SetBool("Walk", true);
+        }
+
+        if (!_input.moveNonZero)
+        {
+            SetState(ActionState.idle);
+            return;
+        }
+
+        Vector3 move = new Vector3(_input.moveInput.x, 0, _input.moveInput.y);
+        move = Vector3.ProjectOnPlane(move, _normalVector);
+        float maxSpeed = State.maxMoveSpeed;
+
+        _forwardVector = Vector3.MoveTowards(_forwardVector, move, _deltaTime * 5f);
+
+        forwardVel += maxSpeed * .4f * _deltaTime;
+
+        _animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
+
+        if (forwardVel > maxSpeed)
+            forwardVel = maxSpeed;
+
+        Vector3 oldPos = transform.position;
+
+        State.velocity = _forwardVector * forwardVel;
+
+        GroundPhysicsStep();
+
+        RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector));
+
+        if (!_grounded)
+        {
+            SetState(ActionState.freefall);
+            return;
+        }
+        
+        if (_steepness > PlayerInfo.SlopeLimit)
+        {
+            SetState(ActionState.slide);
+            return;
+        }
+
+        if (_input.aInput > 0)
+        {
+            State.velocity = _forwardVector * Mathf.Max(forwardVel, maxSpeed/2);
+            SetState(ActionState.jump);
+            return;
+        }
+        
+        if(_input.xInput == 1)
+            SwitchWeapon();
+    }
+
+    void SlideState()
+    {
+        State.velocity -= _slopeVector * (.5f * _deltaTime * Physics.gravity.y * _steepness);
+
+        GroundPhysicsStep();
+        
+        RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector));
+        
+        if (!_grounded)
+        {
+            SetState(ActionState.freefall);
+            return;
+        }
+        
+        if (_steepness < PlayerInfo.SlopeLimit)
+        {
+            SetState(ActionState.idle);
+            return;
+        }
+        
+        if(_input.xInput == 1)
+            SwitchWeapon();
+    }
+
+    void JumpState()
+    {
+        if(_stateTimer == 0)
+        {
+            _animator.SetBool("Grounded", false);
+            _animator.SetTrigger("Jump");
+        }
+
+        if (_stateTimer < .2f)
+            _grounded = false;
+        
+        float multi = 1;
+
+        if (_holdJump && _input.aInput > 1 && State.velocity.y > 0)
+            multi = .4f;
+        else
+        {
+            _holdJump = false;
+        }
+        
+        ApplyAirForce(multi);
+        AirPhysicsStep();
+
+        if (_grounded)
+        {
+            SetState(ActionState.idle);
+            return;
+        }
+
+        if (_bonk)
+        {
+            SetState(ActionState.freefall);
+            return;
+        }
+        
+        if(_input.xInput == 1)
+            SwitchWeapon();
+    }
+
+    void FreeFallState()
+    {
+        if(_stateTimer == 0)
+        {
+            _animator.SetBool("Grounded", false);
+        }
+        ApplyAirForce(1);
+        AirPhysicsStep();
+
+        if (_grounded)
+        {
+            SetState(ActionState.idle);
+            return;
+        }
+        
+        if(_input.xInput == 1)
+            SwitchWeapon();
+    }
+    
+    void AttackState()
+    {
+        if (_stateTimer == 0)
+        {
+            _attackWait = true;
+            _currentWeapon.UseWeapon(this);
+            return;
+        }
+
+        if (_attackWait) return;
+        UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
+        SetState(ActionState.idle);
+        return;
+    }
+
+    void DeathState()
+    {
+        State.alive = false;
+        if(State.currentPlayer)ForceEndTurn();
+        gameObject.SetActive(false);
+    }
+    
+    private void UpdateCharacterState()
+    {
+        if (transform.position.y + PlayerInfo.hitboxHeight < State.currentWaterLevel)
+        {
+            Damage(9999, Vector3.zero);
+        }
+        
+        switch (_currentState)
+        {
+            case ActionState.idle:
+                IdleState();
+                break;
+            case ActionState.moving:
+                MoveState();
+                break;
+            case ActionState.jump:
+                JumpState();
+                break;
+            case ActionState.freefall:
+                FreeFallState();
+                break;
+            case ActionState.slide:
+                SlideState();
+                break;
+            case ActionState.attack:
+                AttackState();
+                break;
+            case ActionState.death:
+                DeathState();
+                break;
+        }
+
+        _stateTimer += _deltaTime;
+    }
+    
+    #endregion
+    
     bool CalcGrounded(ref Vector3 position)
     {
         RaycastHit hit;
@@ -220,8 +478,6 @@ public class WormController : MonoBehaviour, IEntity
         return false;
     }
 
-    const float hitboxHeight = .3f;
-
     void GroundPhysicsStep()
     {
         RaycastHit hit;
@@ -236,21 +492,18 @@ public class WormController : MonoBehaviour, IEntity
 
         Vector3 dir = (pos-oldPos);
 
-        bool collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
-        //Physics.SphereCast(oldPos+.5f*Vector3.up, .5f, dir.normalized, out hit, dir.magnitude);
-        
+        bool collision = Physics.Raycast(oldPos+PlayerInfo.hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
+
         if(collision)
         {
             Vector3 flatNormal = new Vector3(hit.normal.x, 0, hit.normal.z).normalized;
             
-            Debug.DrawRay(hit.point, flatNormal, Color.blue);
+            //Debug.DrawRay(hit.point, flatNormal, Color.blue);
 
-            float dist = Vector3.Distance(pos + hitboxHeight * Vector3.up, hit.point);
+            float dist = Vector3.Distance(pos + PlayerInfo.hitboxHeight * Vector3.up, hit.point);
 
-            if (hit.point.y > _floorLevel+hitboxHeight/3 && (dist) <= .5f)
-            {
+            if (hit.point.y > _floorLevel+PlayerInfo.hitboxHeight/3 && (dist) <= .5f)
                 pos += flatNormal * (.5f-dist);
-            }
         }
         
         transform.position = (pos);
@@ -266,24 +519,18 @@ public class WormController : MonoBehaviour, IEntity
         
         _grounded = CalcGrounded(ref pos);
 
-        Vector3 dir = (pos - oldPos);
-
-        bool collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
+        bool collision = Physics.Raycast(oldPos+PlayerInfo.hitboxHeight*Vector3.up, (pos - oldPos).normalized, out hit, 1f);
 
         if(!collision)
-        {
-            collision = Physics.Raycast(oldPos+hitboxHeight*Vector3.up, Vector3.down, out hit, 1f);
-        }
-        
+            collision = Physics.Raycast(oldPos+PlayerInfo.hitboxHeight*Vector3.up, Vector3.down, out hit, 1f);
+
         if (collision)
         {
-            float dist = Vector3.Distance(pos+hitboxHeight*Vector3.up, hit.point);
+            float dist = Vector3.Distance(pos+PlayerInfo.hitboxHeight*Vector3.up, hit.point);
             //print(dist + ", " + hit.distance);
             
             if (hit.point.y > _floorLevel+.1f && dist <= .5f)
             {
-                print("hello?");
-                
                 pos += hit.normal * (.5f-dist);
                 pos -= _slopeVector * (.5f * _deltaTime * Physics.gravity.y * _steepness);
 
@@ -301,232 +548,15 @@ public class WormController : MonoBehaviour, IEntity
 
         transform.position = (pos);
     }
-
-    private Weapon _currentWeapon;
-    void SwitchWeapon(bool setZero = false)
-    {
-        if(_attackWait)
-            return;
-        
-        if(_currentWeapon != null)_currentWeapon.gameObject.SetActive(false);
-        
-        ref var curr = ref State.currentWeapon;
-        curr++;
-        print(curr);
-        
-        if (setZero)
-            curr = 0;
-        
-        if (weapons.Length < curr)
-            curr = 0;
-
-        if (curr == 0)
-        {
-            UIManager.Instance.UpdateWeaponUI(-1, 0);
-            return;
-        }
-        
-        _currentWeapon = weapons[curr - 1];
-
-        if (!_currentWeapon.CanEquip())
-        {
-            SwitchWeapon();
-            return;
-        }
-
-        _currentWeapon.gameObject.SetActive(true);
-        
-        UIManager.Instance.UpdateWeaponUI(curr-1, _currentWeapon.GetAmount());
-        
-        print(curr);
-    }
-
-    private float _deltaTime;
-    private void FixedUpdate()
-    {
-        _deltaTime = Time.fixedDeltaTime;
-        UpdateCharacter();
-    }
-
-    private void UpdateCharacter()
-    {
-        if (transform.position.y + hitboxHeight < State.currentWaterLevel)
-        {
-            Damage(9999, Vector3.zero);
-        }
-        
-        switch (_currentState)
-        {
-            case WormState.idle:
-                IdleState();
-                break;
-            case WormState.moving:
-                MoveState();
-                break;
-            case WormState.jump:
-                JumpState();
-                break;
-            case WormState.freefall:
-                FreeFallState();
-                break;
-            case WormState.slide:
-                SlideState();
-                break;
-            case WormState.attack:
-                AttackState();
-                break;
-            case WormState.death:
-                DeathState();
-                break;
-        }
-        
-        if(_input.xInput == 1)
-            SwitchWeapon();
-        
-        _stateTimer += _deltaTime;
-    }
-
-    public bool _grounded;
-
-    void IdleState()
-    {
-        if(_stateTimer == 0)
-        {
-            _unlockRotation = false;
-            _rotationVelocity = Vector3.zero;
-            _animator.SetBool("Grounded", true);
-            _animator.SetBool("Walk", false);
-
-            State.velocity = Vector3.zero;
-            
-            GroundPhysicsStep();
-            
-            RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector), true);
-        }
-
-        if (!_grounded)
-        {
-            SetState(WormState.freefall);
-            return;
-        }
-
-        if (_steepness > slopeLimit)
-        {
-            SetState(WormState.slide);
-            return;
-        }
-
-        if (_input.moveNonZero)
-        {
-            SetState(WormState.moving);
-            return;
-        }
-
-        if (_input.aInput == 1)
-        {
-            SetState(WormState.jump);
-            return;
-        }
-
-        if (_input.bInput == 1 && State.currentWeapon != 0)
-        {
-            SetState(WormState.attack);
-            return;
-        }
-            
-    }
-
-    private float forwardVel = 0;
-
-    void MoveState()
-    {
-        if(_stateTimer == 0)
-        {
-            _animator.SetBool("Grounded", true);
-            _animator.SetBool("Walk", true);
-        }
-
-        if (!_input.moveNonZero)
-        {
-            SetState(WormState.idle);
-            return;
-        }
-
-        Vector3 move = new Vector3(_input.moveInput.x, 0, _input.moveInput.y);
-        move = Vector3.ProjectOnPlane(move, _normalVector);
-        float maxSpeed = State.maxMoveSpeed;
-
-        _forwardVector = Vector3.MoveTowards(_forwardVector, move, _deltaTime * 5f);
-
-        forwardVel += maxSpeed * .4f * _deltaTime;
-
-        _animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
-
-        if (forwardVel > maxSpeed)
-            forwardVel = maxSpeed;
-
-        Vector3 oldPos = transform.position;
-
-        State.velocity = _forwardVector * forwardVel;
-
-        GroundPhysicsStep();
-
-        //if (Vector3.Distance(State.startPos, transform.position) > State.maxDistance)
-        //s    transform.position = oldPos;
-
-        RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector));
-
-        if (!_grounded)
-        {
-            SetState(WormState.freefall);
-            return;
-        }
-        
-        if (_steepness > slopeLimit)
-        {
-            SetState(WormState.slide);
-            return;
-        }
-
-        if (_input.aInput > 0)
-        {
-            State.velocity = _forwardVector * Mathf.Max(forwardVel, maxSpeed/2);
-            SetState(WormState.jump);
-            return;
-        }
-    }
-
-    void SlideState()
-    {
-        State.velocity -= _slopeVector * (.5f * _deltaTime * Physics.gravity.y * _steepness);
-
-        GroundPhysicsStep();
-        
-        RotateModel(Quaternion.LookRotation(_forwardVector, _normalVector));
-        
-        if (!_grounded)
-        {
-            SetState(WormState.freefall);
-            return;
-        }
-        
-        if (_steepness < slopeLimit)
-        {
-            SetState(WormState.idle);
-            return;
-        }
-    }
-
-    private const float terminalVel = -20;
-
+    
     void ApplyAirForce(float gravityMultiplier)
     {
         Vector3 vel = State.velocity;
         
         vel.y += Physics.gravity.y * gravityMultiplier*_deltaTime;
 
-        if (vel.y < terminalVel)
-            vel.y = terminalVel;
+        if (vel.y < PlayerInfo.TerminalVel)
+            vel.y = PlayerInfo.TerminalVel;
         if(Mathf.Abs(vel.x) > 0)
             vel.x -= vel.x*.25f*_deltaTime;
         if(Mathf.Abs(vel.z) > 0)
@@ -539,86 +569,38 @@ public class WormController : MonoBehaviour, IEntity
 
         State.velocity = vel;
     }
+
+    public void Damage(float amount, Vector3 force)
+    {
+        print("damaged");
+        _grounded = false;
+        _unlockRotation = true;
+        Vector3 angles = Quaternion.LookRotation(force.normalized, Vector3.up).eulerAngles*(force.magnitude/5);
+        angles.x *= MathHelper.RandomSign();
+        angles.y *= MathHelper.RandomSign();
+        angles.z *= MathHelper.RandomSign();
+        
+        CancelAction();
+        _rotationVelocity = angles;
+        SetState(ActionState.freefall);
+        effects.SetSmokeParticles(true);
+
+        State.velocity += force;
+        State.health = Mathf.Max(State.health - amount, 0);
+        
+        UIManager.Instance.UpdatePlayerHealth(State.playerIndex, State.wormIndex, State.health/_maxHealth);
+        effects.SetHealthUI(State.health/_maxHealth);
+        
+        if(State.health <= 0)
+            SetState(ActionState.death);
+    }
     
-    void JumpState()
-    {
-        if(_stateTimer == 0)
-        {
-            _animator.SetBool("Grounded", false);
-            _animator.SetTrigger("Jump");
-        }
-
-        if (_stateTimer < .2f)
-            _grounded = false;
-        
-        float multi = 1;
-
-        if (_holdJump && _input.aInput > 1 && State.velocity.y > 0)
-            multi = .4f;
-        else
-        {
-            _holdJump = false;
-        }
-        
-        ApplyAirForce(multi);
-        AirPhysicsStep();
-
-        if (_grounded)
-        {
-            SetState(WormState.idle);
-            return;
-        }
-
-        if (_bonk)
-        {
-            SetState(WormState.freefall);
-            return;
-        }
-    }
-
-    void FreeFallState()
-    {
-        if(_stateTimer == 0)
-        {
-            _animator.SetBool("Grounded", false);
-        }
-        ApplyAirForce(1);
-        AirPhysicsStep();
-
-        if (_grounded)
-        {
-            SetState(WormState.idle);
-            return;
-        }
-    }
-
     public void StopAttackWait()
     {
         _attackWait = false;
         SetCamZoom(1);
     } 
     private bool _attackWait;
-    void AttackState()
-    {
-        if (_stateTimer == 0)
-        {
-            _attackWait = true;
-            _currentWeapon.UseWeapon(this);
-            return;
-        }
-
-        if (_attackWait) return;
-        UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
-        SetState(WormState.idle);
-        return;
-    }
-
-    void DeathState()
-    {
-        State.alive = false;
-        if(State.currentPlayer)ForceEndTurn();
-        gameObject.SetActive(false);
-    }
 
     public void ForceEndTurn()
     {
@@ -637,45 +619,26 @@ public class WormController : MonoBehaviour, IEntity
         _animator.SetTrigger(anim);
     }
 
-    public void DeEquipWeapon()
-    {
-        UIManager.Instance.UpdateWeaponUI(State.currentWeapon-1, _currentWeapon.GetAmount());
-        SwitchWeapon(true);
-    }
-
     public void CancelAction()
     {
         SetCamZoom(1);
         
-        if(_currentWeapon != null)
+        if(State.currentWeapon != 0)
             _currentWeapon.CancelWeapon(this);
-    }
-
-    public void Damage(float amount, Vector3 force)
-    {
-        print("damaged");
-        _grounded = false;
-        _unlockRotation = true;
-        Vector3 angles = Quaternion.LookRotation(force.normalized, Vector3.up).eulerAngles*(force.magnitude/5);
-        angles.x *= MathHelper.RandomSign();
-        angles.y *= MathHelper.RandomSign();
-        angles.z *= MathHelper.RandomSign();
-
-        _rotationVelocity = angles;
-        SetState(WormState.freefall);
-        effects.SetSmokeParticles(true);
-
-        State.velocity += force;
-        State.health = Mathf.Max(State.health - amount, 0);
-        
-        UIManager.Instance.UpdatePlayerHealth(State.playerIndex, State.wormIndex, State.health/_maxHealth);
-        
-        if(State.health <= 0)
-            SetState(WormState.death);
     }
 
     public Vector3 GetPos()
     {
-        return transform.position+hitboxHeight*Vector3.up;
+        return transform.position+PlayerInfo.hitboxHeight*Vector3.up;
+    }
+    
+    public Vector3 GetForwards()
+    {
+        return Vector3.ProjectOnPlane(_forwardVector, _normalVector);
+    }
+
+    public Vector3 GetUp()
+    {
+        return _normalVector;
     }
 }

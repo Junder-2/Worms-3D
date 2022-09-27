@@ -44,19 +44,19 @@ public class CameraController : MonoBehaviour
     private const float floorOffset = .5f;
     private const float wallOffset = .2f;
 
-    public void UpdateCamera(ref WormController.PlayerState playerState, ref PlayerInput.InputAction inputs)
+    public void UpdateCamera(ref PlayerInfo.WormState wormState, ref PlayerInput.InputAction inputs)
     {
         float deltaTime = Time.deltaTime;//inputs.deltaTime;
 
         //ref var inputs = ref playerState.input;
-        float yaw = playerState.camYaw;
-        float pitch = playerState.camPitch;
-        if(!playerState.freezeCamYaw)
+        float yaw = wormState.camYaw;
+        float pitch = wormState.camPitch;
+        if(!wormState.freezeCamYaw)
             yaw += inputs.cameraInput.x * deltaTime * turnSpeed.x;
-        if(!playerState.freezeCamPitch)
+        if(!wormState.freezeCamPitch)
             pitch -= inputs.cameraInput.y * deltaTime * turnSpeed.y;
 
-        float offset = camOffset * playerState.camZoom;
+        float offset = camOffset * wormState.camZoom;
 
         yaw %= 360;
         pitch = Mathf.Clamp(pitch, -90f, 90f);
@@ -71,11 +71,29 @@ public class CameraController : MonoBehaviour
             Mathf.Sin(pitch * Mathf.Deg2Rad) * offset,
             cosYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad));
         
-        camPos += Vector3.up*floorOffset;
-
-        RaycastHit hit;
+        Vector3 newPos = wormState.Transform.position + camPos;
         
-        _virtualPos = playerState.Transform.position + camPos;
+        Vector3 dir = Vector3.Cross(camPos.normalized, Vector3.up) * -Mathf.Sign(inputs.cameraInput.x);
+        
+        RaycastHit hit;
+
+        if (Physics.Raycast(newPos, dir, out hit, 5f, _camCollision))
+        {
+            if (hit.distance < wallOffset)
+            {
+                yaw -= inputs.cameraInput.x * deltaTime * turnSpeed.x;
+            }
+        }
+        
+        sinYaw = Mathf.Sin(yaw * Mathf.Deg2Rad);
+        cosYaw = Mathf.Cos(yaw * Mathf.Deg2Rad);
+        
+        camPos = new Vector3(
+            sinYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad),
+            camPos.y,
+            cosYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad));
+
+        _virtualPos = wormState.Transform.position + camPos;
 
         if (Physics.Raycast(transform.position + .5f * Vector3.up, Vector3.down, out hit, 10f, _camCollision))
         {
@@ -88,7 +106,7 @@ public class CameraController : MonoBehaviour
                 zoomMulti = Mathf.Clamp(1 - Mathf.Abs(dist), .2f, 1);
 
                 camPos.y *= zoomMulti;
-                camPos.y += floorOffset;
+                //camPos.y += floorOffset;
 
                 if (zoomMulti <= .2f)
                 {
@@ -97,36 +115,19 @@ public class CameraController : MonoBehaviour
             }   
         }
 
-        Vector3 newPos = playerState.Transform.position + camPos;
+        camPos.y += floorOffset;
+        camPos.x *= zoomMulti;
+        camPos.z *= zoomMulti;
 
-        Vector3 dir = new Vector3(sinYaw * -Mathf.Sign(inputs.cameraInput.x), 0,
-            cosYaw * -Mathf.Sign(inputs.cameraInput.x)).normalized;
-
-        if (Physics.Raycast(newPos, dir, out hit, 5f, _camCollision))
-        {
-            if (hit.distance < wallOffset)
-            {
-                yaw -= inputs.cameraInput.x * deltaTime * turnSpeed.x;
-            }
-        }
-        
-        sinYaw = Mathf.Sin(yaw * Mathf.Deg2Rad);
-        cosYaw = Mathf.Cos(yaw * Mathf.Deg2Rad);
-
-        camPos = new Vector3(
-            sinYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad)*zoomMulti,
-            camPos.y,
-            cosYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad)*zoomMulti);
-        
-        newPos = playerState.Transform.position + camPos;
+        newPos = wormState.Transform.position + camPos;
 
         transform.eulerAngles = new Vector3(-pitch, yaw, 0);
         transform.position = newPos;
 
-        playerState.camYaw = yaw;
-        playerState.camPitch = pitch;
-        playerState.camPos = camPos;
-        playerState.camRot = transform.eulerAngles;
+        wormState.camYaw = yaw;
+        wormState.camPitch = pitch;
+        wormState.camPos = camPos;
+        wormState.camRot = transform.eulerAngles;
 
         inputs.camYaw = yaw;
     }

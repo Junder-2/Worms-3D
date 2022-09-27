@@ -8,6 +8,11 @@ public abstract class Weapon : MonoBehaviour
     [SerializeField] protected float baseDamage;
     [SerializeField] protected float baseKnockback;
 
+    public virtual int GetBaseAmount()
+    {
+        return -1;
+    }
+
     protected virtual void Start()
     {
         gameObject.SetActive(false);
@@ -21,6 +26,11 @@ public abstract class Weapon : MonoBehaviour
     public virtual int GetAmount()
     {
         return -1;
+    }
+
+    public virtual void SetAmount(byte value)
+    {
+        
     }
 
     public virtual void UseWeapon(WormController worm)

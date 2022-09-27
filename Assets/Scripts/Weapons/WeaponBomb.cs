@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class WeaponBomb : Weapon
 {
-    [SerializeField] private byte startAmount;
-    
     private byte amount = 3;
 
     [SerializeField] private float fuseTime, explosionRange;
@@ -13,10 +11,9 @@ public class WeaponBomb : Weapon
     [SerializeField]
     private GameObject thrownBombPrefab;
 
-    protected override void Start()
+    public override int GetBaseAmount()
     {
-        amount = startAmount;
-        base.Start();
+        return 5;
     }
 
     public override bool CanEquip()
@@ -27,6 +24,11 @@ public class WeaponBomb : Weapon
     public override int GetAmount()
     {
         return amount;
+    }
+
+    public override void SetAmount(byte value)
+    {
+        amount = value;
     }
 
     public override void UseWeapon(WormController worm)

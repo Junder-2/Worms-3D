@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class WeaponDynamite : Weapon
 {
-    [SerializeField] private byte startAmount;
-    
+    //[SerializeField] private byte startAmount;
+
     private byte amount = 3;
 
     [SerializeField] private float fuseTime, explosionRange;
@@ -14,15 +14,19 @@ public class WeaponDynamite : Weapon
     [SerializeField]
         private GameObject plantedDynamitePrefab;
 
-    protected override void Start()
+    public override int GetBaseAmount()
     {
-        amount = startAmount;
-        base.Start();
+        return 3;
     }
 
     public override int GetAmount()
     {
         return amount;
+    }
+    
+    public override void SetAmount(byte value)
+    {
+        amount = value;
     }
 
     public override bool CanEquip()

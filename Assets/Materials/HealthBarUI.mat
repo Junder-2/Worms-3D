@@ -27,7 +27,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2451
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -129,6 +129,7 @@ Material:
     - _HealthColor: {r: 1, g: 0, b: 0, a: 1}
     - _HealthValuesA: {r: 1, g: 1, b: 1, a: 0}
     - _HealthValuesB: {r: 0, g: 0, b: 0, a: 0}
+    - _SColor: {r: 1, g: 0, b: 0, a: 1}
     - _Scale: {r: 1, g: 1, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
   m_BuildTextureStacks: []
