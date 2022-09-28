@@ -32,7 +32,7 @@ public class TitleWorm : MonoBehaviour
         _skinMat = renderer.materials[0];
         _eyeMat = renderer.materials[1];
         
-        Color32 color = GameRules.playerPresetColors[wormPreset];
+        Color32 color = GameRules.PlayerPresetColors[wormPreset];
 
         _skinMat.color = color;
         _eyeMat.color = color;

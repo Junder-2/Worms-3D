@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -21,7 +22,7 @@ public class LevelController : MonoBehaviour
 
     private byte _wormsPerPlayer;
     private byte _playerAmount;
-    private byte _lastPlayer;
+    private byte _lastPlayer = 5;
     private byte _currentPlayer;
 
     private byte _currentWorm;
@@ -33,22 +34,34 @@ public class LevelController : MonoBehaviour
     {
         _currentWormController.UpdateInput(new PlayerInput.InputAction());
         _currentWormController.State.currentPlayer = false;
+
+        ProcessDeath();
+
+        byte potentialPlayer = (byte)((_currentPlayer + 1) % _playerAmount);
+
+        int newWorm = 0;
+        bool fail = true;
+        for (int i = 0; i < _wormsPerPlayer; i++)
+        {
+            newWorm = PlayerData[potentialPlayer].worms[i];
+
+            if (!_wormsControllers[newWorm].State.alive) continue;
+            
+            fail = false;
+            break;
+        }
+
+        if (fail)
+        {
+            NextPlayer();
+            return;
+        }
         
         _lastWorm = _currentWorm;
         _lastPlayer = _currentPlayer;
-        _currentPlayer++;
-        _currentPlayer %= _playerAmount;
+        _currentPlayer = potentialPlayer;
 
-        int newWorm = 0;
-        int failCounter = 0;
-        do
-        {
-            newWorm = Random.Range(0, _wormsPerPlayer);
-            failCounter++;
-        } while (!_wormsControllers[newWorm + _currentPlayer*_wormsPerPlayer].State.alive || failCounter < 8);
-        
-
-        _currentWorm = (byte)(newWorm + _currentPlayer*_wormsPerPlayer);
+        _currentWorm = (byte)newWorm;
         _currentWormController = _wormsControllers[_currentWorm];
         
         _currentWormController.State.currentPlayer = true;
@@ -64,7 +77,7 @@ public class LevelController : MonoBehaviour
 
     public PlayerInfo.PlayerData[] PlayerData;
 
-    public enum LevelState {startGame, playerControl, turnEnd}
+    public enum LevelState {startGame, playerControl, turnEnd, playerWin}
 
     private LevelState _levelState;
     private LevelState _lastLevelState;
@@ -95,9 +108,9 @@ public class LevelController : MonoBehaviour
     {
         Instance = this;
         
-        _playerAmount = GameRules.playerAmount;
-        _wormsPerPlayer = GameRules.wormsPerPlayer;
-        _roundTimer = GameRules.roundTimer;
+        _playerAmount = GameRules.PlayerAmount;
+        _wormsPerPlayer = GameRules.WormsPerPlayer;
+        _roundTimer = GameRules.RoundTimer;
         
         _playerInput = GetComponent<PlayerInput>();
         _cameraController = CameraController.Instance;
@@ -119,12 +132,14 @@ public class LevelController : MonoBehaviour
             case LevelState.startGame:
                 StartGameState();
                 break;
-            
             case LevelState.playerControl:
                 PlayerControlState();
                 break;
             case LevelState.turnEnd:
                 EndTurnState();
+                break;
+            case LevelState.playerWin:
+                PlayerWinState();
                 break;
 
         }
@@ -140,10 +155,9 @@ public class LevelController : MonoBehaviour
         PlayerData = new PlayerInfo.PlayerData[_playerAmount];
         _wormsControllers = new WormController[_playerAmount * _wormsPerPlayer];
 
-        float jumpHeight = GameRules.jumpHeight;
-        float maxMoveSpeed = GameRules.maxSpeed;
-        float maxDistance = GameRules.maxDistance;
-        float maxHealth = GameRules.wormsMaxHealth;
+        float jumpHeight = GameRules.JumpHeight;
+        float maxMoveSpeed = GameRules.MaxSpeed;
+        float maxHealth = GameRules.WormsMaxHealth;
 
         int[] presets = {0, 1, 2, 3};
 
@@ -165,7 +179,7 @@ public class LevelController : MonoBehaviour
 
                 WormController newWorm = Instantiate(playerPrefab, spawnPos, Quaternion.identity).GetComponent<WormController>();
                 
-                newWorm.SetPresetLook(presets[i]);
+                newWorm.effects.SetPresetLook(presets[i]);
                 newWorm.effects.InstanceHealthUI((byte)i);
 
                 newWorm.State = new PlayerInfo.WormState
@@ -201,10 +215,8 @@ public class LevelController : MonoBehaviour
         _currentPlayer = (byte)Random.Range(0, _playerAmount);
 
         _currentWormController = _wormsControllers[0];
-        
-        NextPlayer();
-        
-        SetState(LevelState.playerControl);
+
+        SetState(LevelState.turnEnd);
     }
 
     private Vector3 spawnRange = new Vector3(100, 100, 50);
@@ -296,6 +308,50 @@ public class LevelController : MonoBehaviour
 
         if (camTransitonState < 3) return;
         SetState(LevelState.playerControl);
+    }
+
+    void PlayerWinState()
+    {
+        if (_stateTimer == 0)
+        {
+            UIManager.Instance.SetWinText(_currentPlayer);
+            UIManager.Instance.StartTimerUI(10f, true);
+        }
+        
+        if(_stateTimer > 10f || _input.bInput == 1)
+            SceneManager.LoadScene(0);
+    }
+
+    public void ProcessDeath()
+    {
+        int playersAlive = _playerAmount;
+
+        int alivePlayer = 0;
+
+        for (int i = 0; i < _playerAmount; i++)
+        {
+            var playerData = PlayerData[i];
+            bool isAlive = false;
+
+            for (int j = 0; j < _wormsPerPlayer; j++)
+            {
+                int worm = playerData.worms[j];
+                
+                if(!_wormsControllers[worm].State.alive) continue;
+
+                alivePlayer = i;
+                isAlive = true;
+            }
+            
+            if(isAlive) continue;
+
+            playersAlive--;
+        }
+        
+        if(playersAlive > 1) return;
+
+        _currentPlayer = (byte)alivePlayer;
+        SetState(LevelState.playerWin);
     }
 
     private bool _endTurn = false;

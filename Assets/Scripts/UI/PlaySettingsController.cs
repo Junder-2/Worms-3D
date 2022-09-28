@@ -14,10 +14,10 @@ public class PlaySettingsController : MonoBehaviour
 
     private void Start()
     {
-        byte playerAmount = GameRules.playerAmount;
-        byte worms = GameRules.wormsPerPlayer;
-        float health = GameRules.wormsMaxHealth;
-        float roundTimer = GameRules.roundTimer;
+        byte playerAmount = GameRules.PlayerAmount;
+        byte worms = GameRules.WormsPerPlayer;
+        float health = GameRules.WormsMaxHealth;
+        float roundTimer = GameRules.RoundTimer;
         
         playerAmountDisplay.text = playerAmount.ToString();
         wormPerPlayerDisplay.text = worms.ToString();
@@ -27,7 +27,7 @@ public class PlaySettingsController : MonoBehaviour
 
     public void ChangePlayerAmount(int dir)
     {
-        byte playerAmount = GameRules.playerAmount;
+        byte playerAmount = GameRules.PlayerAmount;
 
         switch (dir)
         {
@@ -40,12 +40,12 @@ public class PlaySettingsController : MonoBehaviour
         }
 
         playerAmountDisplay.text = playerAmount.ToString();
-        GameRules.playerAmount = playerAmount;
+        GameRules.PlayerAmount = playerAmount;
     }
 
     public void ChangeWormsPerPlayer(int dir)
     {
-        byte worms = GameRules.wormsPerPlayer;
+        byte worms = GameRules.WormsPerPlayer;
         
         switch (dir)
         {
@@ -58,12 +58,12 @@ public class PlaySettingsController : MonoBehaviour
         }
 
         wormPerPlayerDisplay.text = worms.ToString();
-        GameRules.wormsPerPlayer = worms;
+        GameRules.WormsPerPlayer = worms;
     }
 
     public void ChangePlayerHealth(int dir)
     {
-        float health = GameRules.wormsMaxHealth;
+        float health = GameRules.WormsMaxHealth;
         
         switch (dir)
         {
@@ -76,12 +76,12 @@ public class PlaySettingsController : MonoBehaviour
         }
 
         playerHealthDisplay.text = health.ToString();
-        GameRules.wormsMaxHealth = (half)health;
+        GameRules.WormsMaxHealth = (half)health;
     }
     
     public void ChangeTurnTime(int dir)
     {
-        float roundTimer = GameRules.roundTimer;
+        float roundTimer = GameRules.RoundTimer;
         
         switch (dir)
         {
@@ -94,7 +94,7 @@ public class PlaySettingsController : MonoBehaviour
         }
 
         turnTimeDisplay.text = roundTimer.ToString();
-        GameRules.roundTimer = (half)roundTimer;
+        GameRules.RoundTimer = (half)roundTimer;
     }
 
 }

@@ -20,6 +20,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private UITurnTimer turnTimer;
 
+    [SerializeField]
+        private UIWinDisplay _winDisplay;
+
     private void Awake()
     {
         Instance = this;
@@ -56,7 +59,7 @@ public class UIManager : MonoBehaviour
 
         for (int i = 0; i < playerAmount; i++)
         {
-            UIMatCopy.SetColor("_Color", GameRules.playerUIColors[i]);
+            UIMatCopy.SetColor("_Color", GameRules.PlayerUIColors[i]);
             _healthUIMat[i] = new Material(UIMatCopy);
 
             playerHealth[i].material = _healthUIMat[i];
@@ -109,4 +112,6 @@ public class UIManager : MonoBehaviour
         turnTimer.SetTime((int)time);
         turnTimer.StartTime(start);
     }
+
+    public void SetWinText(byte playerIndex) => _winDisplay.SetWinner(playerIndex);
 }

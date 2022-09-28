@@ -9,21 +9,14 @@ public class WormController : MonoBehaviour, IEntity
 {
     public PlayerInfo.WormState State;
 
-    [HideInInspector] public WormsEffects effects;  
-    
-    [SerializeField] 
-        private Renderer _renderer;
+    [HideInInspector] public WormsEffects effects;
 
     [SerializeField] 
         private Transform model;
-    [SerializeField] 
-        private GameObject[] playerHats;
 
     [SerializeField] 
         private Weapon[] weapons;
 
-        private Material _skinMat, _eyeMat;
-    
     private Rigidbody _rb;
     private Animator _animator;
     
@@ -32,19 +25,19 @@ public class WormController : MonoBehaviour, IEntity
     private Vector3 _slopeVector;
     private float _floorLevel;
     private float _steepness;
-    private float forwardVel = 0;
+    private float _forwardVel = 0;
 
     private float _maxHealth;
     private bool _holdJump;
     private bool _bonk;
-    public bool _grounded;
+    private bool _grounded;
 
     private bool _unlockRotation;
     private Vector3 _rotationVelocity;
     
     private void Awake()
     {
-        _maxHealth = GameRules.wormsMaxHealth;
+        _maxHealth = GameRules.WormsMaxHealth;
         _rb = GetComponent<Rigidbody>();
         _animator = GetComponent<Animator>();
         _grounded = true;
@@ -60,25 +53,10 @@ public class WormController : MonoBehaviour, IEntity
     private void FixedUpdate()
     {
         _deltaTime = Time.fixedDeltaTime;
+        effects.BlinkLoop();
         UpdateCharacterState();
     }
 
-    public void SetPresetLook(int num)
-    {
-        _skinMat = _renderer.materials[0];
-        _eyeMat = _renderer.materials[1];
-        
-        Color32 color = GameRules.playerPresetColors[num];
-
-        _skinMat.color = color;
-        _eyeMat.color = color;
-
-        for (int i = 0; i < playerHats.Length; i++)
-        {
-            playerHats[i].SetActive(i == num);
-        }
-    }
-    
     private PlayerInput.InputAction _input;
     public void UpdateInput(PlayerInput.InputAction input) => _input = input;
 
@@ -171,10 +149,10 @@ public class WormController : MonoBehaviour, IEntity
     void SetState(ActionState state)
     {
         if (_currentState == ActionState.moving && state != ActionState.jump)
-            forwardVel = 0;
+            _forwardVel = 0;
 
         if(_currentState == ActionState.jump)
-            forwardVel = 0;
+            _forwardVel = 0;
 
         if (state == ActionState.jump)
         {
@@ -268,16 +246,16 @@ public class WormController : MonoBehaviour, IEntity
 
         _forwardVector = Vector3.MoveTowards(_forwardVector, move, _deltaTime * 5f);
 
-        forwardVel += maxSpeed * .4f * _deltaTime;
+        _forwardVel += maxSpeed * .4f * _deltaTime;
 
-        _animator.SetFloat("MoveSpeed", forwardVel/maxSpeed);
+        _animator.SetFloat("MoveSpeed", _forwardVel/maxSpeed);
 
-        if (forwardVel > maxSpeed)
-            forwardVel = maxSpeed;
+        if (_forwardVel > maxSpeed)
+            _forwardVel = maxSpeed;
 
         Vector3 oldPos = transform.position;
 
-        State.velocity = _forwardVector * forwardVel;
+        State.velocity = _forwardVector * _forwardVel;
 
         GroundPhysicsStep();
 
@@ -297,7 +275,7 @@ public class WormController : MonoBehaviour, IEntity
 
         if (_input.aInput > 0)
         {
-            State.velocity = _forwardVector * Mathf.Max(forwardVel, maxSpeed/2);
+            State.velocity = _forwardVector * Mathf.Max(_forwardVel, maxSpeed/2);
             SetState(ActionState.jump);
             return;
         }
@@ -320,7 +298,7 @@ public class WormController : MonoBehaviour, IEntity
             return;
         }
         
-        if (_steepness < PlayerInfo.SlopeLimit)
+        if (_steepness < PlayerInfo.SlopeLimit-.15f)
         {
             SetState(ActionState.idle);
             return;
@@ -355,7 +333,7 @@ public class WormController : MonoBehaviour, IEntity
 
         if (_grounded)
         {
-            SetState(ActionState.idle);
+            SetState(_steepness < PlayerInfo.SlopeLimit - .1f ? ActionState.idle : ActionState.slide);
             return;
         }
 
@@ -380,7 +358,7 @@ public class WormController : MonoBehaviour, IEntity
 
         if (_grounded)
         {
-            SetState(ActionState.idle);
+            SetState(_steepness < PlayerInfo.SlopeLimit - .1f ? ActionState.idle : ActionState.slide);
             return;
         }
         
@@ -407,6 +385,8 @@ public class WormController : MonoBehaviour, IEntity
     {
         State.alive = false;
         if(State.currentPlayer)ForceEndTurn();
+        LevelController.Instance.ProcessDeath();
+        
         gameObject.SetActive(false);
     }
     
