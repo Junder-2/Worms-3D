@@ -10,25 +10,30 @@ public class ExplosionObject : MonoBehaviour, IEntity
     [SerializeField] private GameObject explosionEffect;
 
     private Rigidbody _rb;
+    private AudioSource _audioSource;
     
     public void Instantiate(float maxDamage, float force, float fuseTime, float explosionRange)
     {
         _rb = GetComponent<Rigidbody>();
+        _audioSource = GetComponent<AudioSource>();
         _maxDamage = maxDamage;
         _maxForce = force;
         _explosionRange = explosionRange;
-
+        
         StartCoroutine(Explode(fuseTime));
     }
 
     IEnumerator Explode(float fuseTime)
     {
+        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.FuseLit), .5f);
         yield return new WaitForSeconds(fuseTime);
+        _audioSource.Stop();
 
         _exploded = true;
         _rb.isKinematic = true;
         bombMesh.SetActive(false);
         explosionEffect.SetActive(true);
+        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.Explosion));
         explosionEffect.transform.localScale = Vector3.one*(_explosionRange*2);
 
         Collider[] hits;

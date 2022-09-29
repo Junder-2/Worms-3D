@@ -455,7 +455,7 @@ GameObject:
   - component: {fileID: 335805768}
   - component: {fileID: 335805767}
   - component: {fileID: 335805766}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: Water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2217,6 +2217,7 @@ GameObject:
   - component: {fileID: 1543092801}
   - component: {fileID: 1543092800}
   - component: {fileID: 1543092799}
+  - component: {fileID: 1543092802}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -2265,6 +2266,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1543092802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1543092798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ec33be130d4dc54a915ff9a605be841, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterSplashPrefab: {fileID: 7396461666611685615, guid: d3f330533024fdf4295c7d9cbd06ae61, type: 3}
 --- !u!1001 &1587529350
 PrefabInstance:
   m_ObjectHideFlags: 0

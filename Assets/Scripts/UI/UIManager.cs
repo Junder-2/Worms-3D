@@ -114,4 +114,9 @@ public class UIManager : MonoBehaviour
     }
 
     public void SetWinText(byte playerIndex) => _winDisplay.SetWinner(playerIndex);
+
+    public void PlaySound()
+    {
+        
+    }
 }

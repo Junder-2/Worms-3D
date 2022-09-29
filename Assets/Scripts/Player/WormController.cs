@@ -394,6 +394,7 @@ public class WormController : MonoBehaviour, IEntity
     {
         if (transform.position.y + PlayerInfo.hitboxHeight < State.currentWaterLevel)
         {
+            LevelEffects.Instance.SpawnWaterSplash(transform.position);
             Damage(9999, Vector3.zero);
         }
         
@@ -570,7 +571,7 @@ public class WormController : MonoBehaviour, IEntity
         
         UIManager.Instance.UpdatePlayerHealth(State.playerIndex, State.wormIndex, State.health/_maxHealth);
         effects.SetHealthUI(State.health/_maxHealth);
-        
+
         if(State.health <= 0)
             SetState(ActionState.death);
     }

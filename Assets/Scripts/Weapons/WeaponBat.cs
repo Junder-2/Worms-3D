@@ -77,6 +77,8 @@ public class WeaponBat : Weapon
                 worm.SetAnimTrigger("SwingB");
 
                 yield return new WaitForSeconds(.1f);
+                
+                PlayAudio((int)AudioSet.AudioID.BatImpact, Mathf.Max(chargeStrength-1, 0.2f));
 
                 dist *= chargeStrength;
         

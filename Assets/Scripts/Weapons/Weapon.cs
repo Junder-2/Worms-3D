@@ -8,6 +8,18 @@ public abstract class Weapon : MonoBehaviour
     [SerializeField] protected float baseDamage;
     [SerializeField] protected float baseKnockback;
 
+    private AudioSource _audioSource;
+
+    private void Awake()
+    {
+        _audioSource = GetComponent<AudioSource>();
+    }
+
+    protected void PlayAudio(int index, float volume = 1)
+    {
+        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip(index));
+    }
+
     public virtual int GetBaseAmount()
     {
         return -1;

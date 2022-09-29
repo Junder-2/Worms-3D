@@ -9,8 +9,6 @@ public class WormsEffects : MonoBehaviour
 {
     [SerializeField] private AimLine aimLine;
 
-    [SerializeField] private byte lineResolution = 16;
-
     [SerializeField] private ParticleSystem smokeParticles;
 
     [SerializeField]
