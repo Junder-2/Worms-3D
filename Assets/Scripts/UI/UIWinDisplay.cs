@@ -19,6 +19,6 @@ public class UIWinDisplay : MonoBehaviour
         
         winText.color = GameRules.PlayerUIColors[playerIndex];
 
-        winText.text = "Player " + (playerIndex + 1) + "Wins!!!";
+        winText.text = "Player " + (playerIndex + 1) + " Wins!!!";
     }
 }

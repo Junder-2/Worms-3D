@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,9 @@ public class ExplosionObject : MonoBehaviour, IEntity
 
     private Rigidbody _rb;
     private AudioSource _audioSource;
-    
+
+    [SerializeField] private bool impactExplode = false;
+
     public void Instantiate(float maxDamage, float force, float fuseTime, float explosionRange)
     {
         _rb = GetComponent<Rigidbody>();
@@ -20,7 +23,20 @@ public class ExplosionObject : MonoBehaviour, IEntity
         _maxForce = force;
         _explosionRange = explosionRange;
         
+        LevelController.Instance.SetCamFollow(transform);
+        
         StartCoroutine(Explode(fuseTime));
+    }
+
+    private void LateUpdate()
+    {
+        if(_exploded) return;
+        
+        if (_rb.position.y < 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(Explode(0f));
+        }
     }
 
     IEnumerator Explode(float fuseTime)
@@ -60,7 +76,7 @@ public class ExplosionObject : MonoBehaviour, IEntity
 
         yield return new WaitForSeconds(.5f);
         
-        Destroy(gameObject);
+        DestroySelf();
     }
 
     private bool _exploded = false;
@@ -75,5 +91,21 @@ public class ExplosionObject : MonoBehaviour, IEntity
     public Vector3 GetPos()
     {
         return _rb.position;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(!impactExplode) return;
+        
+        if(_exploded)
+            return;
+        StopAllCoroutines();
+        StartCoroutine(Explode(0));
+    }
+
+    void DestroySelf()
+    {
+        LevelController.Instance.CancelCamFollow();
+        Destroy(gameObject);
     }
 }

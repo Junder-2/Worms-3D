@@ -15,6 +15,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: BazookaBase
+    second: {fileID: 2100000, guid: e5610570a8782d5419426c4a08c7981a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: BombBase
     second: {fileID: 2100000, guid: 8a9ad708ed182c447bb7e6aff08d889c, type: 2}
   - first:
@@ -42,6 +47,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: GunBase
     second: {fileID: 2100000, guid: 6a4cceae5ef066f43a469b4c5ef1c5a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RocketBase
+    second: {fileID: 2100000, guid: 20603f0c8e5434e47802eec65e72c1c0, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -149,7 +159,7 @@ ModelImporter:
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
   referencedClips: []
-  importAnimation: 1
+  importAnimation: 0
   humanDescription:
     serializedVersion: 3
     human: []

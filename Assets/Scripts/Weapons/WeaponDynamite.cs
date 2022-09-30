@@ -7,7 +7,7 @@ public class WeaponDynamite : Weapon
 {
     //[SerializeField] private byte startAmount;
 
-    private byte amount = 3;
+    private byte _amount = 3;
 
     [SerializeField] private float fuseTime, explosionRange;
 
@@ -16,29 +16,41 @@ public class WeaponDynamite : Weapon
 
     public override int GetBaseAmount()
     {
-        return 3;
+        switch (GameRules.WormsPerPlayer)
+        {
+            case 1:
+                return 1;
+            case 2:
+                return 2;
+            case 3:
+                return 3;
+            case 4:
+                return 3;
+        }
+        
+        return -1;
     }
 
     public override int GetAmount()
     {
-        return amount;
+        return _amount;
     }
     
     public override void SetAmount(byte value)
     {
-        amount = value;
+        _amount = value;
     }
 
     public override bool CanEquip()
     {
-        return amount > 0;
+        return _amount > 0;
     }
     
     public override void UseWeapon(WormController worm)
     {
         worm.SetAnimTrigger("Plant");
 
-        amount--;
+        _amount--;
 
         StartCoroutine(DelayPlace(worm.GetPos() + worm.GetForwards()*.5f, worm));
     }
@@ -51,7 +63,7 @@ public class WeaponDynamite : Weapon
         
         yield return new WaitForSeconds(.5f);
         worm.StopAttackWait();
-        if(amount <= 0)
+        if(_amount <= 0)
             worm.DeEquipWeapon();
     }
 }

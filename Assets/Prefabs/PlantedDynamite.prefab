@@ -250,6 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bombMesh: {fileID: 5168508683183152605}
   explosionEffect: {fileID: 1055685621622528206}
+  impactExplode: 0
 --- !u!82 &6281721543503488650
 AudioSource:
   m_ObjectHideFlags: 0
@@ -306,7 +307,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0

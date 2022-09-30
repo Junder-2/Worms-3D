@@ -41,9 +41,14 @@ public class LevelController : MonoBehaviour
 
         int newWorm = 0;
         bool fail = true;
+
+        int[] wormList = PlayerData[potentialPlayer].worms;
+        
+        MathHelper.ShuffleArray(ref wormList);
+        
         for (int i = 0; i < _wormsPerPlayer; i++)
         {
-            newWorm = PlayerData[potentialPlayer].worms[i];
+            newWorm = wormList[i];
 
             if (!_wormsControllers[newWorm].State.alive) continue;
             
@@ -85,7 +90,7 @@ public class LevelController : MonoBehaviour
     private float _stateTimer;
     private bool _deltaPause;
 
-    public void SetState(LevelState newState)
+    private void SetState(LevelState newState)
     {
         if (newState == LevelState.playerControl)
         {
@@ -165,7 +170,7 @@ public class LevelController : MonoBehaviour
         
         for (int i = 0; i < _playerAmount; i++)
         {
-            PlayerData[i].worms = new byte[_wormsPerPlayer];
+            PlayerData[i].worms = new int[_wormsPerPlayer];
 
             for (int j = 0; j < _wormsPerPlayer; j++)
             {
@@ -187,6 +192,7 @@ public class LevelController : MonoBehaviour
                     maxMoveSpeed = maxMoveSpeed,
                     jumpHeight = jumpHeight,
                     Transform = newWorm.transform,
+                    camFollow = newWorm.transform,
                     wormIndex = (byte)j,
                     playerIndex = (byte)i,
                     currentPlayer = false,
@@ -356,4 +362,14 @@ public class LevelController : MonoBehaviour
 
     private bool _endTurn = false;
     public void ForceTurnEnd() => _endTurn = true;
+    
+    public void SetCamFollow(Transform target)
+    {
+        _currentWormController.State.camFollow = target;
+    }
+
+    public void CancelCamFollow()
+    {
+        _currentWormController.State.camFollow = _currentWormController.transform;
+    }
 }

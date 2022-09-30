@@ -93,7 +93,7 @@ public class CameraController : MonoBehaviour
             camPos.y,
             cosYaw * offset * Mathf.Cos(pitch * Mathf.Deg2Rad));
 
-        _virtualPos = wormState.Transform.position + camPos;
+        _virtualPos = wormState.camFollow.position + camPos;
 
         if (Physics.Raycast(transform.position + .5f * Vector3.up, Vector3.down, out hit, 10f, _camCollision))
         {
@@ -119,7 +119,7 @@ public class CameraController : MonoBehaviour
         camPos.x *= zoomMulti;
         camPos.z *= zoomMulti;
 
-        newPos = wormState.Transform.position + camPos;
+        newPos = wormState.camFollow.position + camPos;
 
         transform.eulerAngles = new Vector3(-pitch, yaw, 0);
         transform.position = newPos;

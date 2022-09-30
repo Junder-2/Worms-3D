@@ -17,6 +17,8 @@ public class PlayerInfo
         
         public float camYaw, camPitch, camZoom;
 
+        public Transform camFollow;
+
         public Vector3 camPos, camRot;
 
         public float maxMoveSpeed;
