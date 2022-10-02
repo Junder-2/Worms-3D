@@ -18,7 +18,6 @@ public class WormController : MonoBehaviour, IEntity
         private Weapon[] weapons;
 
     private Rigidbody _rb;
-    private Animator _animator;
     
     private Vector3 _normalVector;
     private Vector3 _forwardVector;
@@ -39,7 +38,6 @@ public class WormController : MonoBehaviour, IEntity
     {
         _maxHealth = GameRules.WormsMaxHealth;
         _rb = GetComponent<Rigidbody>();
-        _animator = GetComponent<Animator>();
         _grounded = true;
         _forwardVector = Vector3.forward;
         _normalVector = Vector3.up;
@@ -183,8 +181,8 @@ public class WormController : MonoBehaviour, IEntity
         {
             _unlockRotation = false;
             _rotationVelocity = Vector3.zero;
-            _animator.SetBool("Grounded", true);
-            _animator.SetBool("Walk", false);
+            effects.SetAnimBool("Grounded", true);
+            effects.SetAnimBool("Walk", false);
 
             State.velocity = Vector3.zero;
             
@@ -232,8 +230,8 @@ public class WormController : MonoBehaviour, IEntity
     {
         if(_stateTimer == 0)
         {
-            _animator.SetBool("Grounded", true);
-            _animator.SetBool("Walk", true);
+            effects.SetAnimBool("Grounded", true);
+            effects.SetAnimBool("Walk", true);
         }
 
         if (!_input.moveNonZero)
@@ -250,7 +248,7 @@ public class WormController : MonoBehaviour, IEntity
 
         _forwardVel += maxSpeed * .4f * _deltaTime;
 
-        _animator.SetFloat("MoveSpeed", _forwardVel/maxSpeed);
+        effects.SetAnimFloat("MoveSpeed", _forwardVel/maxSpeed);
 
         if (_forwardVel > maxSpeed)
             _forwardVel = maxSpeed;
@@ -314,8 +312,8 @@ public class WormController : MonoBehaviour, IEntity
     {
         if(_stateTimer == 0)
         {
-            _animator.SetBool("Grounded", false);
-            _animator.SetTrigger("Jump");
+            effects.SetAnimBool("Grounded", false);
+            effects.SetAnimTrigger("Jump");
 
             effects.PlaySound((int)AudioSet.AudioID.Hiya2);
         }
@@ -355,7 +353,7 @@ public class WormController : MonoBehaviour, IEntity
     {
         if(_stateTimer == 0)
         {
-            _animator.SetBool("Grounded", false);
+            effects.SetAnimBool("Grounded", false);
         }
         ApplyAirForce(1);
         AirPhysicsStep();
@@ -609,11 +607,6 @@ public class WormController : MonoBehaviour, IEntity
         value = Mathf.Max(0, value);
         
         State.camZoom = value;
-    }
-
-    public void SetAnimTrigger(string anim)
-    {
-        _animator.SetTrigger(anim);
     }
 
     public void CancelAction()

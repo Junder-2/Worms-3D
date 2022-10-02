@@ -9,6 +9,8 @@ public class WormsEffects : MonoBehaviour
 {
     private AudioSource _audioSource;
 
+    private Animator _animator;
+
     [SerializeField] private AimLine aimLine;
 
     [SerializeField] private ParticleSystem smokeParticles;
@@ -27,6 +29,7 @@ public class WormsEffects : MonoBehaviour
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
+        _animator = GetComponent<Animator>();
 
         DisableAimLine();
         SetHighlight(false);
@@ -146,4 +149,12 @@ public class WormsEffects : MonoBehaviour
     }
 
     public void SetHighlight(bool value) => highlight.SetActive(value);
+
+    public void SetAnimBool(string name, bool value) => _animator.SetBool(name, value);
+
+    public void SetAnimInt(string name, int value) => _animator.SetInteger(name, value);
+
+    public void SetAnimFloat(string name, float value) => _animator.SetFloat(name, value);
+
+    public void SetAnimTrigger(string name) => _animator.SetTrigger(name);
 }

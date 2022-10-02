@@ -48,7 +48,7 @@ public class WeaponDynamite : Weapon
     
     public override void UseWeapon(WormController worm)
     {
-        worm.SetAnimTrigger("Plant");
+        worm.effects.SetAnimTrigger("Plant");
         worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh2);
 
         _amount--;

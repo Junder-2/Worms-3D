@@ -53,7 +53,7 @@ public abstract class Weapon : MonoBehaviour
     {
         StopAllCoroutines();
         
-        worm.SetAnimTrigger("Cancel");
+        worm.effects.SetAnimTrigger("Cancel");
         worm.effects.DisableAimLine();
         worm.StopAttackWait();
     }

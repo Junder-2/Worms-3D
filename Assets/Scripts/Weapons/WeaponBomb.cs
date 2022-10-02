@@ -90,7 +90,7 @@ public class WeaponBomb : Weapon
         float lastZoom = zoom;
         
         worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh1);
-        worm.SetAnimTrigger("Throw");
+        worm.effects.SetAnimTrigger("Throw");
 
         //yield return new WaitForSeconds(.31f);
 

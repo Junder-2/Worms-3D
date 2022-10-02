@@ -14,7 +14,7 @@ public class WeaponBat : Weapon
 
     IEnumerator BatAction(WormController worm)
     {
-        worm.SetAnimTrigger("SwingA");
+        worm.effects.SetAnimInt("Swing", 1);
         worm.effects.PlaySound((int)AudioSet.AudioID.UghhYa1);
         
         RaycastHit hit;
@@ -77,7 +77,8 @@ public class WeaponBat : Weapon
                 
                 Vector3 force = (entity.GetPos() - wormPos).normalized * baseKnockback + Vector3.up*launchKnockback;
                 
-                worm.SetAnimTrigger("SwingB");
+                worm.effects.SetAnimInt("Swing", 2);
+                //worm.effects.SetAnimTrigger("SwingB");
 
                 yield return new WaitForSeconds(.1f);
                 
@@ -103,7 +104,7 @@ public class WeaponBat : Weapon
             }
         }
 
-        worm.SetAnimTrigger("SwingB");
+        worm.effects.SetAnimInt("Swing", 2);
         //yield return new WaitForSeconds(.75f);
         
         do
