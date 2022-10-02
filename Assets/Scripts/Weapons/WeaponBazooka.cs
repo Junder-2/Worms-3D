@@ -31,20 +31,11 @@ public class WeaponBazooka : Weapon
         return -1;
     }
 
-    public override bool CanEquip()
-    {
-        return _amount > 0;
-    }
+    public override bool CanEquip() => _amount > 0;
 
-    public override int GetAmount()
-    {
-        return _amount;
-    }
+    public override int GetAmount() => _amount;
 
-    public override void SetAmount(byte value)
-    {
-        _amount = value;
-    }
+    public override void SetAmount(byte value) => _amount = value;
 
     public override void UseWeapon(WormController worm)
     {
@@ -89,8 +80,8 @@ public class WeaponBazooka : Weapon
             {
                 worm.TurnPlayer(input.rawMoveInput.x*45f*Time.deltaTime);
 
-                aimForwards = Mathf.Clamp(aimForwards + input.rawMoveInput.y * Time.deltaTime*5f, 0, 8f);
-                aimUpwards = Mathf.Clamp(aimUpwards + input.cameraInput.y * Time.deltaTime*5f, -1f, 8f);
+                aimForwards = Mathf.Clamp(aimForwards + input.rawMoveInput.y * Time.deltaTime*5f, 0, 15f);
+                aimUpwards = Mathf.Clamp(aimUpwards + input.cameraInput.y * Time.deltaTime*5f, -10f, 15f);
             }
 
             worm.effects.SetLine(rocketSpawn.position, aimUpwards * Vector3.up + (aimForwards*rocketSpeed) * worm.GetForwards(), 1f);

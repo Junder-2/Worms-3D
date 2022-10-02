@@ -15,6 +15,7 @@ public class WeaponBat : Weapon
     IEnumerator BatAction(WormController worm)
     {
         worm.SetAnimTrigger("SwingA");
+        worm.effects.PlaySound((int)AudioSet.AudioID.UghhYa1);
         
         RaycastHit hit;
 
@@ -24,7 +25,7 @@ public class WeaponBat : Weapon
         float timer = 0;
 
         bool chargeBat = true;
-        float chargeStrength = 1f;
+        float chargeStrength = .5f;
         float zoom = 1f;
 
         float lastZoom;
@@ -53,6 +54,8 @@ public class WeaponBat : Weapon
         } while (chargeBat);
 
         lastZoom = zoom;
+
+        worm.effects.PlaySound((int)AudioSet.AudioID.UghhYa2);
 
         if (Physics.Raycast(wormPos, wormForwards, out hit, 5f))
         {
@@ -95,23 +98,24 @@ public class WeaponBat : Weapon
                 } while (timer < 1);
                 
                 worm.StopAttackWait();
+
+                StopAllCoroutines();
             }
         }
-        else
+
+        worm.SetAnimTrigger("SwingB");
+        //yield return new WaitForSeconds(.75f);
+        
+        do
         {
-            worm.SetAnimTrigger("SwingB");
-            //yield return new WaitForSeconds(.75f);
-            
-            do
-            {
-                timer += Time.deltaTime/.75f;
-                zoom = Mathf.Lerp(lastZoom, 1, timer);
-                worm.SetCamZoom(zoom);
-                    
-                yield return null;
-            } while (timer < 1);
-            
-            worm.StopAttackWait();
-        }
+            timer += Time.deltaTime/.75f;
+            zoom = Mathf.Lerp(lastZoom, 1, timer);
+            worm.SetCamZoom(zoom);
+                
+            yield return null;
+        } while (timer < 1);
+        
+        worm.StopAttackWait();
+        
     }
 }

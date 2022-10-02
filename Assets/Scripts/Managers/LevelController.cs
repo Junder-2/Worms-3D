@@ -120,6 +120,8 @@ public class LevelController : MonoBehaviour
         _playerInput = GetComponent<PlayerInput>();
         _cameraController = CameraController.Instance;
 
+        AudioManager.Instance.PlayMusic((int)AudioSet.MusicID.Game);
+
         SetState(LevelState.startGame);
     }
 

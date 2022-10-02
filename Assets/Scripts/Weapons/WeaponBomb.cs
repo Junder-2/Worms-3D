@@ -28,20 +28,11 @@ public class WeaponBomb : Weapon
         return -1;
     }
 
-    public override bool CanEquip()
-    {
-        return _amount > 0;
-    }
+    public override bool CanEquip() => _amount > 0;
 
-    public override int GetAmount()
-    {
-        return _amount;
-    }
+    public override int GetAmount() => _amount;
 
-    public override void SetAmount(byte value)
-    {
-        _amount = value;
-    }
+    public override void SetAmount(byte value) => _amount = value;
 
     public override void UseWeapon(WormController worm)
     {
@@ -79,8 +70,8 @@ public class WeaponBomb : Weapon
             {
                 worm.TurnPlayer(input.rawMoveInput.x*45f*Time.deltaTime);
 
-                throwForward = Mathf.Clamp(throwForward + input.rawMoveInput.y * Time.deltaTime*5f, 0, 15f);
-                throwUp = Mathf.Clamp(throwUp + input.cameraInput.y * Time.deltaTime*5f, -1f, 10f);
+                throwForward = Mathf.Clamp(throwForward + input.rawMoveInput.y * Time.deltaTime*5f, 0, 20f);
+                throwUp = Mathf.Clamp(throwUp + input.cameraInput.y * Time.deltaTime*5f, -2f, 15f);
             }
             
             pos = worm.GetPos() + worm.GetForwards() * .5f;
@@ -98,6 +89,7 @@ public class WeaponBomb : Weapon
 
         float lastZoom = zoom;
         
+        worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh1);
         worm.SetAnimTrigger("Throw");
 
         //yield return new WaitForSeconds(.31f);
@@ -114,6 +106,8 @@ public class WeaponBomb : Weapon
         } while (timer < 1);
 
         _amount--;
+
+        worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh2);
         
         worm.effects.DisableAimLine();
 

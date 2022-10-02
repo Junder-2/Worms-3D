@@ -27,7 +27,7 @@ public class WaterSplash : MonoBehaviour
     {
         timer += Time.deltaTime;
         
-        rippleMat.SetFloat(Step, Mathf.Lerp(startStep, 0, timer/lifeTime));
+        rippleMat.SetFloat(Step, Mathf.Lerp(startStep, 1, timer/lifeTime));
         
         if(timer/lifeTime > 1)
             Destroy(gameObject);

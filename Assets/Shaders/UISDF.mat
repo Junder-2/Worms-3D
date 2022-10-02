@@ -8,8 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: UISDF
-  m_Shader: {fileID: -6465566751694194690, guid: fa8c453ffe42d834d8bde5a8805e09ae, type: 3}
-  m_ValidKeywords: []
+  m_Shader: {fileID: 4800000, guid: 34f1ff5ac20776542b81efc490f6bf6f, type: 3}
+  m_ValidKeywords:
+  - UNITY_UI_ALPHACLIP
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -76,6 +77,7 @@ Material:
     - _GlowOuter: 0.05
     - _GlowPower: 0.75
     - _GradientScale: 5
+    - _Intensity: 1
     - _LightAngle: 3.1416
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
@@ -109,7 +111,7 @@ Material:
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: 0
     - _UnderlaySoftness: 0
-    - _UseUIAlphaClip: 0
+    - _UseUIAlphaClip: 1
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.5

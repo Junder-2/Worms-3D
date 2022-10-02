@@ -16,3 +16,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 14be781a8ad3c3447abca5c33477b265, type: 3}
   - {fileID: 8300000, guid: b3fbf7e4491b57f478c1febf7e204a80, type: 3}
   - {fileID: 8300000, guid: f0a01a01e2dfd2c47b065a01219a1730, type: 3}
+  - {fileID: 8300000, guid: 02bc21c4fb6432e44a787034667e94c7, type: 3}
+  - {fileID: 8300000, guid: f867f0761ceca434c87db1ca2da16abc, type: 3}
+  - {fileID: 8300000, guid: b3ba73c2142a53449a2abf8267d755e6, type: 3}
+  - {fileID: 8300000, guid: bcd79fc91d5f0bb4b98a04150dbd23e3, type: 3}
+  - {fileID: 8300000, guid: 6b0fed9f0901cb0448b050c8d4dfdf02, type: 3}
+  - {fileID: 8300000, guid: cad8a24408074c340bc742ab06b8282a, type: 3}
+  - {fileID: 8300000, guid: 352baa8e2326f0b458967d962ee1ec29, type: 3}
+  - {fileID: 8300000, guid: 4b3b0754edec4e340abaf474679d5bb7, type: 3}
+  - {fileID: 8300000, guid: 7f49299d9241d024eb12fe76ca10201d, type: 3}
+  - {fileID: 8300000, guid: f25be8c50e8c2944db4b009e6b3cbe54, type: 3}
+  songClips:
+  - {fileID: 8300000, guid: d501824b26576624895a5fd60437d478, type: 3}
+  - {fileID: 8300000, guid: 5116cc0a4435bcf4283d6321f0ee6793, type: 3}

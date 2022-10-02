@@ -119,6 +119,8 @@ public class WormController : MonoBehaviour, IEntity
 
     public void SetPlayerTurn(PlayerInfo.PlayerData data)
     {
+        State.camFollow = transform;
+
         for (int i = 0; i < data.weaponAmount.Length; i++)
         {
             weapons[i].SetAmount((byte)data.weaponAmount[i]);
@@ -314,6 +316,8 @@ public class WormController : MonoBehaviour, IEntity
         {
             _animator.SetBool("Grounded", false);
             _animator.SetTrigger("Jump");
+
+            effects.PlaySound((int)AudioSet.AudioID.Hiya2);
         }
 
         if (_stateTimer < .2f)
@@ -560,11 +564,23 @@ public class WormController : MonoBehaviour, IEntity
         angles.x *= MathHelper.RandomSign();
         angles.y *= MathHelper.RandomSign();
         angles.z *= MathHelper.RandomSign();
-        
+
         CancelAction();
         _rotationVelocity = angles;
         SetState(ActionState.freefall);
-        effects.SetSmokeParticles(true);
+
+        if(force.magnitude < 5f)
+        {
+            int clip = Random.Range(0, 2) == 0 ? (int)AudioSet.AudioID.Ow : (int)AudioSet.AudioID.Oww;
+            
+            effects.PlaySound(clip);
+        }
+        else
+        {
+            effects.PlaySound((int)AudioSet.AudioID.Waah);
+            effects.SetSmokeParticles(true);
+        }
+       
 
         State.velocity += force;
         State.health = Mathf.Max(State.health - amount, 0);
@@ -603,6 +619,8 @@ public class WormController : MonoBehaviour, IEntity
     public void CancelAction()
     {
         SetCamZoom(1);
+
+        UpdateInput(new PlayerInput.InputAction());
         
         if(State.currentWeapon != 0)
             _currentWeapon.CancelWeapon(this);

@@ -7,6 +7,8 @@ using Random = UnityEngine.Random;
 
 public class WormsEffects : MonoBehaviour
 {
+    private AudioSource _audioSource;
+
     [SerializeField] private AimLine aimLine;
 
     [SerializeField] private ParticleSystem smokeParticles;
@@ -24,6 +26,8 @@ public class WormsEffects : MonoBehaviour
 
     private void Start()
     {
+        _audioSource = GetComponent<AudioSource>();
+
         DisableAimLine();
         SetHighlight(false);
     }
@@ -134,6 +138,11 @@ public class WormsEffects : MonoBehaviour
     public void SetHealthUI(float value)
     {
         _healthMat.SetVector(HealthValuesA, new Vector4(value,0,0,0));
+    }
+
+    public void PlaySound(int index, float volume = 1)
+    {
+        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip(index), volume);
     }
 
     public void SetHighlight(bool value) => highlight.SetActive(value);

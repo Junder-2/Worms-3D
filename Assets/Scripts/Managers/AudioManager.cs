@@ -36,4 +36,12 @@ public class AudioManager : MonoBehaviour
     {
         soundSource.PlayOneShot(audioSet.GetSound(index));
     }
+
+    public void PlayMusic(int index)
+    {
+        musicSource.Stop();
+        musicSource.clip = audioSet.GetMusic(index);
+        musicSource.loop = true;
+        musicSource.Play();
+    }
 }

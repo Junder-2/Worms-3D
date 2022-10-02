@@ -8,7 +8,7 @@ public class PlayerInfo
     {
         public int[] weaponAmount;
 
-        public byte[] worms;
+        public int[] worms;
     }
     
     public struct WormState

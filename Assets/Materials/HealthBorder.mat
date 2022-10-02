@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: HealthBorder
-  m_Shader: {fileID: -6465566751694194690, guid: fa8c453ffe42d834d8bde5a8805e09ae, type: 3}
+  m_Shader: {fileID: 4800000, guid: 34f1ff5ac20776542b81efc490f6bf6f, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -95,6 +95,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _Intensity: 1
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
     - _Metallic: 0
@@ -113,6 +114,7 @@ Material:
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
     - _Surface: 0
+    - _UseUIAlphaClip: 0
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WorkflowMode: 1

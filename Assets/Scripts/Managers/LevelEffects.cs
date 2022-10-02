@@ -13,17 +13,10 @@ public class LevelEffects : MonoBehaviour
     {
         Instance = this;
     }
-    
-    LayerMask waterLayer => LayerMask.NameToLayer("Water");
 
     public void SpawnWaterSplash(Vector3 pos)
     {
-        RaycastHit hit;
-
-        if (Physics.Raycast(pos + 2f * Vector3.up, Vector3.down, out hit, 10f, waterLayer))
-        {
-            pos.y = hit.point.y;
-        }
+        pos.y = 0;
 
         Instantiate(waterSplashPrefab, pos, Quaternion.identity);
     }

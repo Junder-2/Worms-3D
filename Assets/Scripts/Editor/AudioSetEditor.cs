@@ -7,32 +7,48 @@ using UnityEngine;
 [CustomEditor(typeof(AudioSet))]
 public class AudioSetEditor : Editor
 {
-
-    private readonly int size = Enum.GetValues(typeof(AudioSet.AudioID)).Length;
+    private readonly int audioEffectSize = Enum.GetValues(typeof(AudioSet.AudioID)).Length;
+    private readonly int songSize = Enum.GetValues(typeof(AudioSet.MusicID)).Length;
 
     private SerializedProperty _audioClips;
+    private SerializedProperty _songClips;
 
     private void OnEnable()
     {
         AudioSet audioSet = (AudioSet)target;
-        if (audioSet.audioClips.Length != size)
-            audioSet.audioClips = new AudioClip[size];
+        if (audioSet.audioClips.Length != audioEffectSize)
+            audioSet.audioClips = new AudioClip[audioEffectSize];
         
         _audioClips = serializedObject.FindProperty("audioClips");
+
+        if (audioSet.songClips.Length != songSize)
+            audioSet.songClips = new AudioClip[songSize];
+        
+        _songClips = serializedObject.FindProperty("songClips");
     }
 
     public override void OnInspectorGUI()
     {
         EditorGUI.BeginChangeCheck();
 
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < audioEffectSize; i++)
         {
-            /*_audioSet.audioClips[i] = (AudioClip)EditorGUILayout.ObjectField(((AudioSet.AudioID)i).ToString(),
-                _audioSet.audioClips[i], typeof(AudioClip), false);*/
-
             var clip = _audioClips.GetArrayElementAtIndex(i);
 
             EditorGUILayout.LabelField(((AudioSet.AudioID)i).ToString());
+
+            EditorGUILayout.PropertyField(clip, GUIContent.none);
+            
+            EditorGUILayout.Space(5);
+        }
+
+        EditorGUILayout.Space(15);
+
+        for (int i = 0; i < songSize; i++)
+        {
+            var clip = _songClips.GetArrayElementAtIndex(i);
+
+            EditorGUILayout.LabelField(((AudioSet.MusicID)i).ToString());
 
             EditorGUILayout.PropertyField(clip, GUIContent.none);
             

@@ -18,6 +18,11 @@ public class MainMenuManager : MonoBehaviour
         SetMenu(0);
     }
 
+    private void Start() 
+    {
+        AudioManager.Instance.PlayMusic((int)AudioSet.MusicID.Menu);
+    }
+
     void SetMenu(int index)
     {
         for (int i = 0; i < menus.Length; i++)

@@ -135,21 +135,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float transitionSpeed = 5;
 
     public bool TransitionCamera(Vector3 startCamPos, Vector3 targetCamPos, Vector3 startCamRot, Vector3 targetCamRot, float delta)
-    {
-        /*float distance = Mathf.Max(Vector3.Distance(startCamPos, targetCamPos), Single.Epsilon);
-
-        var position = transform.position;
-        
-        float t = 1 - Mathf.Clamp01(Vector2.Distance(new Vector2(position.x, position.z), new Vector2(targetCamPos.x, targetCamPos.z)) / distance);
-        
-        Vector3 spherize = Vector3.up*(Math.Min(distance, 5f)*Mathf.Sin(t*Mathf.PI));
-        
-        position = Vector3.MoveTowards(position, targetCamPos+spherize, delta*transitionSpeed);
-        transform.position = position;
-
-        transform.eulerAngles = Vector3.Slerp(startCamRot, targetCamRot, t);
-
-        return t >= 1;*/
+    {        
         var position = transform.position;
         
         float distance = Mathf.Max(Vector3.Distance(startCamPos, targetCamPos), Single.Epsilon);
