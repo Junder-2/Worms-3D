@@ -33,9 +33,11 @@ public class PlaySettingsController : MonoBehaviour
         {
             case 0 when playerAmount > GameRules.MinPlayers:
                 playerAmount--;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickB);
                 break;
             case 1 when playerAmount < GameRules.MaxPlayers:
                 playerAmount++;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickA);
                 break;
         }
 
@@ -51,9 +53,11 @@ public class PlaySettingsController : MonoBehaviour
         {
             case 0 when worms > GameRules.MinWorms:
                 worms--;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickB);
                 break;
             case 1 when worms < GameRules.MaxWorms:
                 worms++;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickA);
                 break;
         }
 
@@ -69,9 +73,11 @@ public class PlaySettingsController : MonoBehaviour
         {
             case 0 when health > GameRules.MinHealth:
                 health -= 5;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickB);
                 break;
             case 1 when health < GameRules.MaxHealth:
                 health += 5;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickA);
                 break;
         }
 
@@ -87,9 +93,11 @@ public class PlaySettingsController : MonoBehaviour
         {
             case 0 when roundTimer > GameRules.MinRoundTime:
                 roundTimer -= 5;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickB);
                 break;
             case 1 when roundTimer < GameRules.MaxRoundTime:
                 roundTimer += 5;
+                AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickA);
                 break;
         }
 

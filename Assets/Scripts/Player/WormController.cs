@@ -124,7 +124,7 @@ public class WormController : MonoBehaviour, IEntity
             weapons[i].SetAmount((byte)data.weaponAmount[i]);
         }
 
-        UIManager.Instance.InstanceWeaponUI(GetWeaponsAmount(), State.currentWeapon-1);
+        UIManager.Instance.InstanceWeaponUI(data.weaponAmount, State.currentWeapon-1);
     }
     
     public void TurnPlayer(float amount)
@@ -394,7 +394,7 @@ public class WormController : MonoBehaviour, IEntity
     
     private void UpdateCharacterState()
     {
-        if (transform.position.y + PlayerInfo.hitboxHeight < State.currentWaterLevel)
+        if (transform.position.y + PlayerInfo.HitboxHeight < State.currentWaterLevel)
         {
             LevelEffects.Instance.SpawnWaterSplash(transform.position);
             Damage(9999, Vector3.zero);
@@ -475,7 +475,7 @@ public class WormController : MonoBehaviour, IEntity
 
         Vector3 dir = (pos-oldPos);
 
-        bool collision = Physics.Raycast(oldPos+PlayerInfo.hitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
+        bool collision = Physics.Raycast(oldPos+PlayerInfo.HitboxHeight*Vector3.up, dir.normalized, out hit, 1f);
 
         if(collision)
         {
@@ -483,9 +483,9 @@ public class WormController : MonoBehaviour, IEntity
             
             //Debug.DrawRay(hit.point, flatNormal, Color.blue);
 
-            float dist = Vector3.Distance(pos + PlayerInfo.hitboxHeight * Vector3.up, hit.point);
+            float dist = Vector3.Distance(pos + PlayerInfo.HitboxHeight * Vector3.up, hit.point);
 
-            if (hit.point.y > _floorLevel+PlayerInfo.hitboxHeight/3 && (dist) <= .5f)
+            if (hit.point.y > _floorLevel+PlayerInfo.HitboxHeight/3 && (dist) <= .5f)
                 pos += flatNormal * (.5f-dist);
         }
         
@@ -502,14 +502,14 @@ public class WormController : MonoBehaviour, IEntity
         
         _grounded = CalcGrounded(ref pos);
 
-        bool collision = Physics.Raycast(oldPos+PlayerInfo.hitboxHeight*Vector3.up, (pos - oldPos).normalized, out hit, 1f);
+        bool collision = Physics.Raycast(oldPos+PlayerInfo.HitboxHeight*Vector3.up, (pos - oldPos).normalized, out hit, 1f);
 
         if(!collision)
-            collision = Physics.Raycast(oldPos+PlayerInfo.hitboxHeight*Vector3.up, Vector3.down, out hit, 1f);
+            collision = Physics.Raycast(oldPos+PlayerInfo.HitboxHeight*Vector3.up, Vector3.down, out hit, 1f);
 
         if (collision)
         {
-            float dist = Vector3.Distance(pos+PlayerInfo.hitboxHeight*Vector3.up, hit.point);
+            float dist = Vector3.Distance(pos+PlayerInfo.HitboxHeight*Vector3.up, hit.point);
             //print(dist + ", " + hit.distance);
             
             if (hit.point.y > _floorLevel+.1f && dist <= .5f)
@@ -597,10 +597,7 @@ public class WormController : MonoBehaviour, IEntity
     } 
     private bool _attackWait;
 
-    public void ForceEndTurn()
-    {
-        LevelController.Instance.ForceTurnEnd();
-    }
+    public void ForceEndTurn() => LevelController.Instance.ForceTurnEnd();
 
     public void SetCamZoom(float value)
     {
@@ -619,18 +616,7 @@ public class WormController : MonoBehaviour, IEntity
             _currentWeapon.CancelWeapon(this);
     }
 
-    public Vector3 GetPos()
-    {
-        return transform.position+PlayerInfo.hitboxHeight*Vector3.up;
-    }
-    
-    public Vector3 GetForwards()
-    {
-        return Vector3.ProjectOnPlane(_forwardVector, _normalVector);
-    }
-
-    public Vector3 GetUp()
-    {
-        return _normalVector;
-    }
+    public Vector3 GetPos() => transform.position+PlayerInfo.HitboxHeight*Vector3.up;
+    public Vector3 GetForwards() => Vector3.ProjectOnPlane(_forwardVector, _normalVector);
+    public Vector3 GetUp() => _normalVector;
 }

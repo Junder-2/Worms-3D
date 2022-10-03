@@ -75,7 +75,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 0.25
+  m_PixelsPerUnitMultiplier: 0.3
 --- !u!1 &3770679832111790020
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,10 +146,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0, g: 0, b: 0, a: 1}
-    m_HighlightedColor: {r: 1, g: 0, b: 0, a: 1}
-    m_PressedColor: {r: 1, g: 0, b: 0, a: 1}
-    m_SelectedColor: {r: 1, g: 0, b: 0, a: 1}
+    m_NormalColor: {r: 0.9333334, g: 0.7058824, b: 0.8000001, a: 1}
+    m_HighlightedColor: {r: 0.85800004, g: 0.45645604, b: 0.60101193, a: 1}
+    m_PressedColor: {r: 0.85800004, g: 0.45645604, b: 0.60101193, a: 1}
+    m_SelectedColor: {r: 0.85800004, g: 0.45645604, b: 0.60101193, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -325,8 +325,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Play
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: d47ca121eb792454d90465da739b6356, type: 2}
+  m_sharedMaterial: {fileID: -5087086241730905675, guid: d47ca121eb792454d90465da739b6356, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -38,11 +38,16 @@ public class LevelController : MonoBehaviour
         ProcessDeath();
 
         byte potentialPlayer = (byte)((_currentPlayer + 1) % _playerAmount);
+        
+        GetNextWorm(potentialPlayer);
+    }
 
+    void GetNextWorm(byte player)
+    {
         int newWorm = 0;
         bool fail = true;
 
-        int[] wormList = PlayerData[potentialPlayer].worms;
+        int[] wormList = PlayerData[player].worms;
         
         MathHelper.ShuffleArray(ref wormList);
         
@@ -64,7 +69,7 @@ public class LevelController : MonoBehaviour
         
         _lastWorm = _currentWorm;
         _lastPlayer = _currentPlayer;
-        _currentPlayer = potentialPlayer;
+        _currentPlayer = player;
 
         _currentWorm = (byte)newWorm;
         _currentWormController = _wormsControllers[_currentWorm];
@@ -72,8 +77,6 @@ public class LevelController : MonoBehaviour
         _currentWormController.State.currentPlayer = true;
         
         _currentWormController.SetPlayerTurn(PlayerData[_currentPlayer]);
-
-        //DisplayMoveRange();
     }
 
     private WormController[] _wormsControllers;
@@ -82,7 +85,7 @@ public class LevelController : MonoBehaviour
 
     public PlayerInfo.PlayerData[] PlayerData;
 
-    public enum LevelState {startGame, playerControl, turnEnd, playerWin}
+    private enum LevelState {startGame, playerControl, turnEnd, playerWin}
 
     private LevelState _levelState;
     private LevelState _lastLevelState;
@@ -189,12 +192,13 @@ public class LevelController : MonoBehaviour
                 newWorm.effects.SetPresetLook(presets[i]);
                 newWorm.effects.InstanceHealthUI((byte)i);
 
+                var transform1 = newWorm.transform;
                 newWorm.State = new PlayerInfo.WormState
                 {
                     maxMoveSpeed = maxMoveSpeed,
                     jumpHeight = jumpHeight,
-                    Transform = newWorm.transform,
-                    camFollow = newWorm.transform,
+                    Transform = transform1,
+                    camFollow = transform1,
                     wormIndex = (byte)j,
                     playerIndex = (byte)i,
                     currentPlayer = false,
@@ -223,11 +227,13 @@ public class LevelController : MonoBehaviour
         _currentPlayer = (byte)Random.Range(0, _playerAmount);
 
         _currentWormController = _wormsControllers[0];
+        
+        _currentWormController.SetPlayerTurn(PlayerData[0]);
 
         SetState(LevelState.turnEnd);
     }
 
-    private Vector3 spawnRange = new Vector3(100, 100, 50);
+    private readonly Vector3 spawnRange = new Vector3(100, 100, 50);
     bool TryToSpawn(out Vector3 pos)
     {
         bool success = false;
@@ -298,6 +304,12 @@ public class LevelController : MonoBehaviour
                 break;
             }
             case 1:
+                if (!_currentWormController.State.alive)
+                {
+                    GetNextWorm(_currentPlayer);
+                    _currentWormController.effects.SetHighlight(true);
+                }
+                
                 finished = _input.aInput == 1;
                 
                 camTransitonState = finished ? (byte)2 : (byte)1;

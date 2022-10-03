@@ -11,6 +11,8 @@ public class AudioSet : ScriptableObject
     public enum AudioID
     {
         BatImpact, Explosion, FuseLit,
+        
+        UIClickA, UIClickB,
 
         HghWuh1, HghWuh2, Hiya1, Hiya2, Hmmrgh, Oww, Ow, UghhYa1, UghhYa2, Waah
     };

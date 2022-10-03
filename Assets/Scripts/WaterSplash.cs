@@ -19,7 +19,7 @@ public class WaterSplash : MonoBehaviour
     {
         rippleMat = waterRipples.material;
 
-        startStep = rippleMat.GetFloat("_Step");
+        startStep = rippleMat.GetFloat(Step);
         rippleMat.SetFloat(Step, startStep);
     }
 

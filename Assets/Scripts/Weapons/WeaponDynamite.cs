@@ -7,7 +7,7 @@ public class WeaponDynamite : Weapon
 {
     //[SerializeField] private byte startAmount;
 
-    private byte _amount = 3;
+    private byte _amount = 1;
 
     [SerializeField] private float fuseTime, explosionRange;
 

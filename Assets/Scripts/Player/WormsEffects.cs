@@ -150,11 +150,11 @@ public class WormsEffects : MonoBehaviour
 
     public void SetHighlight(bool value) => highlight.SetActive(value);
 
-    public void SetAnimBool(string name, bool value) => _animator.SetBool(name, value);
+    public void SetAnimBool(string animName, bool value) => _animator.SetBool(animName, value);
 
-    public void SetAnimInt(string name, int value) => _animator.SetInteger(name, value);
+    public void SetAnimInt(string animName, int value) => _animator.SetInteger(animName, value);
 
-    public void SetAnimFloat(string name, float value) => _animator.SetFloat(name, value);
+    public void SetAnimFloat(string animName, float value) => _animator.SetFloat(animName, value);
 
-    public void SetAnimTrigger(string name) => _animator.SetTrigger(name);
+    public void SetAnimTrigger(string animName) => _animator.SetTrigger(animName);
 }

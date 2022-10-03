@@ -18,11 +18,12 @@ public class MainMenuManager : MonoBehaviour
         SetMenu(0);
     }
 
-    private void Start() 
+    private void Start()
     {
         AudioManager.Instance.PlayMusic((int)AudioSet.MusicID.Menu);
     }
 
+    private int menuIndex = 0;
     void SetMenu(int index)
     {
         for (int i = 0; i < menus.Length; i++)
@@ -38,15 +39,23 @@ public class MainMenuManager : MonoBehaviour
                 menus[i].GetWindow().SetActive(false);
             }
         }
+
+        menuIndex = index;
     }
 
     public void SwitchMenu(int index)
     {
+        if(menuIndex - index > 0)
+            AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickB);
+        else 
+            AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickA);
+        
         SetMenu(index);
     }
 
     public void OnQuitButton()
     {
+        AudioManager.Instance.PlayGlobalSound((int)AudioSet.AudioID.UIClickB);
         Application.Quit();
     }
 

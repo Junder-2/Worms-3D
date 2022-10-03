@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class WeaponBazooka : Weapon
 {
-    private byte _amount = 2;
+    private byte _amount = 0;
 
     [SerializeField] private float fuseTime, explosionRange, rocketSpeed;
 

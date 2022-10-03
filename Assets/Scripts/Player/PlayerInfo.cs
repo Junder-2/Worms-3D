@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInfo
@@ -44,7 +42,7 @@ public class PlayerInfo
 
     public const float SlopeLimit = .65f;
     
-    public const float hitboxHeight = .3f;
+    public const float HitboxHeight = .3f;
     
     public const float TerminalVel = -20;
 }
