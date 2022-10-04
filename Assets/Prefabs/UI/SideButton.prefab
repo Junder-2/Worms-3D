@@ -16,6 +16,18 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 01cf9bc2a7eeef641afbe3481ac92376, type: 3}
     - target: {fileID: 1008677675374434078, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1008677675374434078, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1008677675374434078, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1008677675374434078, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
       propertyPath: m_PreserveAspect
       value: 1
       objectReference: {fileID: 0}
@@ -23,6 +35,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: SideButton
       objectReference: {fileID: 0}
+    - target: {fileID: 4011102600291582049, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4011102600291582049, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 01cf9bc2a7eeef641afbe3481ac92376, type: 3}
     - target: {fileID: 6465547067716926754, guid: 3fc575babd7b43948a202c6166bbe7cd, type: 3}
       propertyPath: m_Type
       value: 0

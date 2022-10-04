@@ -16,13 +16,11 @@ public class WormsEffects : MonoBehaviour
     [SerializeField] private ParticleSystem smokeParticles;
 
     [SerializeField]
-        private Image healthUI;
+        private UIHealthBar healthUI;
 
     [SerializeField] 
-        private GameObject highlight;
+    private GameObject highlight;
 
-    private Material _healthMat;
-    
     private static readonly int HealthValuesA = Shader.PropertyToID("_HealthValuesA");
     private static readonly int HealthValuesB = Shader.PropertyToID("_HealthValuesB");
 
@@ -48,8 +46,10 @@ public class WormsEffects : MonoBehaviour
     private float _eyeTilt;
     private float _eyeLidDefault;
     
-    public void SetPresetLook(int num)
+    public void Setup(int playerIndex)
     {
+        int num = GameRules.playerAssignedPreset[playerIndex];
+        
         _skinMat = renderer.materials[0];
         _eyeMat = renderer.materials[1];
         
@@ -69,6 +69,8 @@ public class WormsEffects : MonoBehaviour
         _eyeMat.SetFloat(Blink, _eyeLidDefault);
         _eyeMat.SetFloat(EyeLidTilt, _eyeTilt);
         _blinkTimer = Random.Range(0f, 1f);
+        
+        healthUI.SetupHealth(1, playerIndex);
     }
 
     private float _blinkTimer = 0;
@@ -126,27 +128,12 @@ public class WormsEffects : MonoBehaviour
             smokeParticles.Stop();
     }
 
-    public void InstanceHealthUI(byte playerIndex)
-    {
-        _healthMat = new Material(healthUI.material);
-        
-        _healthMat.SetFloat("_MaximumHealth", 1);
-        _healthMat.SetColor("_Color", GameRules.PlayerUIColors[playerIndex]);
-        _healthMat.SetVector(HealthValuesA, new Vector4(1,0,0,0));
-        _healthMat.SetVector(HealthValuesB, Vector4.zero);
-
-        healthUI.material = _healthMat;
-    }
-    
-    public void SetHealthUI(float value)
-    {
-        _healthMat.SetVector(HealthValuesA, new Vector4(value,0,0,0));
-    }
-
     public void PlaySound(int index, float volume = 1)
     {
         _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip(index), volume);
     }
+    
+    public void SetHealthUI(float value) => healthUI.UpdateHealth(0, value);
 
     public void SetHighlight(bool value) => highlight.SetActive(value);
 

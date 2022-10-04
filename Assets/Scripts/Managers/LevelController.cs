@@ -30,14 +30,14 @@ public class LevelController : MonoBehaviour
 
     private float _maxHealth;
 
-    void NextPlayer()
+    void NextPlayer(byte currPlayer)
     {
         _currentWormController.UpdateInput(new PlayerInput.InputAction());
         _currentWormController.State.currentPlayer = false;
 
         ProcessDeath();
 
-        byte potentialPlayer = (byte)((_currentPlayer + 1) % _playerAmount);
+        byte potentialPlayer = (byte)((currPlayer + 1) % _playerAmount);
         
         GetNextWorm(potentialPlayer);
     }
@@ -63,7 +63,7 @@ public class LevelController : MonoBehaviour
 
         if (fail)
         {
-            NextPlayer();
+            NextPlayer(player);
             return;
         }
         
@@ -169,9 +169,11 @@ public class LevelController : MonoBehaviour
         float maxMoveSpeed = GameRules.MaxSpeed;
         float maxHealth = GameRules.WormsMaxHealth;
 
-        int[] presets = {0, 1, 2, 3};
+        /*int[] presets = {0, 1, 2, 3};
 
         MathHelper.ShuffleArray(ref presets);
+
+        GameRules.playerAssignedPreset = presets;*/
         
         for (int i = 0; i < _playerAmount; i++)
         {
@@ -189,8 +191,7 @@ public class LevelController : MonoBehaviour
 
                 WormController newWorm = Instantiate(playerPrefab, spawnPos, Quaternion.identity).GetComponent<WormController>();
                 
-                newWorm.effects.SetPresetLook(presets[i]);
-                newWorm.effects.InstanceHealthUI((byte)i);
+                newWorm.effects.Setup(i);
 
                 var transform1 = newWorm.transform;
                 newWorm.State = new PlayerInfo.WormState
@@ -222,7 +223,7 @@ public class LevelController : MonoBehaviour
             PlayerData[i].weaponAmount = weaponAmount;
         }
 
-        UIManager.Instance.SetPlayersHealth(_playerAmount, _wormsPerPlayer, maxHealth);
+        UIManager.Instance.SetUpPlayersHealth(_playerAmount, _wormsPerPlayer);
 
         _currentPlayer = (byte)Random.Range(0, _playerAmount);
 
@@ -298,7 +299,7 @@ public class LevelController : MonoBehaviour
 
                 if (finished)
                 {
-                    NextPlayer();
+                    NextPlayer(_currentPlayer);
                     _currentWormController.effects.SetHighlight(true);
                 }
                 break;

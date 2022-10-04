@@ -26,6 +26,11 @@ public class GameRules
     public const byte MinRoundTime = 5;
     public const byte MaxRoundTime = 40;
 
+    public static int[] playerAssignedPreset =
+    {
+        0, 1, 2, 4
+    };
+
     public static Color32[] PlayerUIColors = {
         Color.blue, Color.red, Color.green, Color.yellow
     };

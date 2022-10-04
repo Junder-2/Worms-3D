@@ -9,12 +9,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
-    [SerializeField]
-        private Image[] playerHealth;
-
-    private Material[] _healthUIMat;
-    private static readonly int HealthValuesA = Shader.PropertyToID("_HealthValuesA");
-    private static readonly int HealthValuesB = Shader.PropertyToID("_HealthValuesB");
+    [SerializeField] 
+        private UIHealthBar[] healthBar;
 
     [SerializeField] private UIWeaponIcon[] weaponIcon;
 
@@ -28,61 +24,23 @@ public class UIManager : MonoBehaviour
         Instance = this;
     }
 
-    public void SetPlayersHealth(byte playerAmount, byte wormAmount, float maxHealth)
+    public void SetUpPlayersHealth(byte playerAmount, byte wormAmount)
     {
-        _healthUIMat = new Material[playerAmount];
-
-        Material UIMatCopy = playerHealth[0].material;
-
-        Vector4 aValues = Vector4.zero;
-        Vector4 bValues = Vector4.zero;
-
-        for (int i = 0; i < wormAmount; i++)
+        for (int i = 0; i < healthBar.Length; i++)
         {
-            int index = i % 4;
-
-            if (i < 4)
-                aValues[index] = 1;
+            if (i < playerAmount)
+            {
+                healthBar[i].SetupHealth(wormAmount, i);
+                healthBar[i].Display(true);
+            }
             else
-                bValues[index] = 1;
-
-        }
-        
-        UIMatCopy.SetVector(HealthValuesA, aValues);
-        UIMatCopy.SetVector(HealthValuesB, bValues);
-        UIMatCopy.SetFloat("_MaximumHealth", wormAmount);
-
-        foreach (var t in playerHealth)
-        {
-            t.transform.parent.gameObject.SetActive(false);
-        }
-
-        for (int i = 0; i < playerAmount; i++)
-        {
-            UIMatCopy.SetColor("_Color", GameRules.PlayerUIColors[i]);
-            _healthUIMat[i] = new Material(UIMatCopy);
-
-            playerHealth[i].material = _healthUIMat[i];
-            playerHealth[i].transform.parent.gameObject.SetActive(true);
+                healthBar[i].Display(false);
         }
     }
 
     public void UpdatePlayerHealth(byte player, byte worm, float health)
     {
-        int index = worm % 4;
-
-        if (worm < 4)
-        {
-            Vector4 values = _healthUIMat[player].GetVector(HealthValuesA);
-            values[index] = health;
-            _healthUIMat[player].SetVector(HealthValuesA, values);
-        }
-        else
-        {
-            Vector4 values = _healthUIMat[player].GetVector(HealthValuesB);
-            values[index] = health;
-            _healthUIMat[player].SetVector(HealthValuesB, values);
-        }
+        healthBar[player].UpdateHealth(worm, health);
     }
 
     public void InstanceWeaponUI(int[] amount, int selected)
@@ -114,9 +72,4 @@ public class UIManager : MonoBehaviour
     }
 
     public void SetWinText(byte playerIndex) => _winDisplay.SetWinner(playerIndex);
-
-    public void PlaySound()
-    {
-        
-    }
 }

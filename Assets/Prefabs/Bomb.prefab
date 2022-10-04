@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8982094aece1004393b7610f10e41f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseDamage: 12
+  baseDamage: 20
   baseKnockback: 8
   fuseTime: 5
   explosionRange: 5

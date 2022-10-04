@@ -14,17 +14,26 @@ public class MainMenuManager : MonoBehaviour
     private void Awake()
     {
         _eventSystem = GetComponent<EventSystem>();
-        
-        SetMenu(0);
     }
 
     private void Start()
     {
+        SetupMenus();
+        SetMenu(0);
+        
         AudioManager.Instance.PlayMusic((int)AudioSet.MusicID.Menu);
     }
 
+    private void SetupMenus()
+    {
+        foreach (var t in menus)
+        {
+            t.Setup();
+        }
+    }
+
     private int menuIndex = 0;
-    void SetMenu(int index)
+    private void SetMenu(int index)
     {
         for (int i = 0; i < menus.Length; i++)
         {

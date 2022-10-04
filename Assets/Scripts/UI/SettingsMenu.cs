@@ -10,21 +10,45 @@ public class SettingsMenu : MonoBehaviour
 
     [SerializeField] private AudioMixer mixer;
 
-    private static readonly string[] VolumeName = new[]
+    private static readonly string[] VolumeName =
     {
         "MasterVolume", "MusicVolume", "SoundVolume"
     };
     
-    
-    // Start is called before the first frame update
-    void Start()
+    public void Setup()
     {
-        for (int i = 0; i < VolumeName.Length; i++)
+        if (PlayerPrefs.HasKey(VolumeName[0]))
         {
-            mixer.GetFloat(VolumeName[i], out var value);
+            for (int i = 0; i < VolumeName.Length; i++)
+            {
+                float value = VolumeToLinear(PlayerPrefs.GetFloat(VolumeName[i]));
 
-            volumeSlider[i].value = VolumeToLinear(value);
+                volumeSlider[i].value = value;
+                
+                SetVolume(value, i);
+            }
         }
+        else
+        {
+            for (int i = 0; i < VolumeName.Length; i++)
+            {
+                mixer.GetFloat(VolumeName[i], out var value);
+
+                volumeSlider[i].value = VolumeToLinear(value);
+            }
+        }
+    }
+    
+    public void SaveSettings()
+    {
+        foreach (var t in VolumeName)
+        {
+            mixer.GetFloat(t, out var value);
+            
+            PlayerPrefs.SetFloat(t, value);
+        }
+
+        PlayerPrefs.Save();
     }
 
     public void SetMasterVolume(float value) => SetVolume(value, 0);

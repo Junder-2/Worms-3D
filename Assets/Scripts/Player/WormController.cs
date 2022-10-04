@@ -612,6 +612,8 @@ public class WormController : MonoBehaviour, IEntity
 
         UpdateInput(new PlayerInput.InputAction());
         
+        if(_currentState == ActionState.attack) effects.PlaySound((int)AudioSet.AudioID.Hmmrgh);
+        
         if(State.currentWeapon != 0)
             _currentWeapon.CancelWeapon(this);
     }
