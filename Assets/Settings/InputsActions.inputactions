@@ -97,7 +97,7 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "2D Vector",
+                    "name": "Wasd",
                     "id": "7ed259a5-08e9-4fe2-b15f-a20715e195ef",
                     "path": "2DVector",
                     "interactions": "",
@@ -155,6 +155,17 @@
                     "name": "",
                     "id": "eab2755a-3d6e-4a38-8481-aa4ebec46ff1",
                     "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8e81bdd8-62be-4bba-9796-130f015ebbaf",
+                    "path": "<Gamepad>/dpad",
                     "interactions": "",
                     "processors": "",
                     "groups": "Controller",
@@ -282,6 +293,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Options",
+                    "type": "Button",
+                    "id": "224ad713-2f43-4367-9ebc-fd22e6c13ed3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -326,6 +346,28 @@
                     "processors": "",
                     "groups": "Controller",
                     "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9b5b4e7b-be1a-4e98-8210-eb5070475eb8",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Options",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "03ca463a-0e42-4d9c-bb30-e636bcaefb97",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Options",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

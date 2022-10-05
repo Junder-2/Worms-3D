@@ -10,16 +10,16 @@ public class AudioSet : ScriptableObject
 
     public enum AudioID
     {
-        BatImpact, Explosion, FuseLit,
+        batImpact, explosion, fuseLit,
         
-        UIClickA, UIClickB,
+        uiClickA, uiClickB,
 
-        HghWuh1, HghWuh2, Hiya1, Hiya2, Hmmrgh, Oww, Ow, UghhYa1, UghhYa2, Waah
+        hghWuh1, hghWuh2, hiya1, hiya2, hmmrgh, oww, ow, ughhYa1, ughhYa2, waah
     };
 
     public enum MusicID
     {
-        Menu, Game
+        menu, game
     };
 
     public AudioClip GetSound(int index)

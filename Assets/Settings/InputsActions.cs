@@ -119,7 +119,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": ""2D Vector"",
+                    ""name"": ""Wasd"",
                     ""id"": ""7ed259a5-08e9-4fe2-b15f-a20715e195ef"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
@@ -177,6 +177,17 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""eab2755a-3d6e-4a38-8481-aa4ebec46ff1"",
                     ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8e81bdd8-62be-4bba-9796-130f015ebbaf"",
+                    ""path"": ""<Gamepad>/dpad"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Controller"",
@@ -304,6 +315,15 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Options"",
+                    ""type"": ""Button"",
+                    ""id"": ""224ad713-2f43-4367-9ebc-fd22e6c13ed3"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -350,6 +370,28 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                     ""action"": ""Submit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b5b4e7b-be1a-4e98-8210-eb5070475eb8"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Options"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""03ca463a-0e42-4d9c-bb30-e636bcaefb97"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Options"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -391,6 +433,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
         m_UI_Mouse = m_UI.FindAction("Mouse", throwIfNotFound: true);
         m_UI_LeftClick = m_UI.FindAction("LeftClick", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
+        m_UI_Options = m_UI.FindAction("Options", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -518,6 +561,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_Mouse;
     private readonly InputAction m_UI_LeftClick;
     private readonly InputAction m_UI_Submit;
+    private readonly InputAction m_UI_Options;
     public struct UIActions
     {
         private @InputsActions m_Wrapper;
@@ -525,6 +569,7 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
         public InputAction @Mouse => m_Wrapper.m_UI_Mouse;
         public InputAction @LeftClick => m_Wrapper.m_UI_LeftClick;
         public InputAction @Submit => m_Wrapper.m_UI_Submit;
+        public InputAction @Options => m_Wrapper.m_UI_Options;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -543,6 +588,9 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                 @Submit.started -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
                 @Submit.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
                 @Submit.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnSubmit;
+                @Options.started -= m_Wrapper.m_UIActionsCallbackInterface.OnOptions;
+                @Options.performed -= m_Wrapper.m_UIActionsCallbackInterface.OnOptions;
+                @Options.canceled -= m_Wrapper.m_UIActionsCallbackInterface.OnOptions;
             }
             m_Wrapper.m_UIActionsCallbackInterface = instance;
             if (instance != null)
@@ -556,6 +604,9 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
                 @Submit.started += instance.OnSubmit;
                 @Submit.performed += instance.OnSubmit;
                 @Submit.canceled += instance.OnSubmit;
+                @Options.started += instance.OnOptions;
+                @Options.performed += instance.OnOptions;
+                @Options.canceled += instance.OnOptions;
             }
         }
     }
@@ -591,5 +642,6 @@ public partial class @InputsActions : IInputActionCollection2, IDisposable
         void OnMouse(InputAction.CallbackContext context);
         void OnLeftClick(InputAction.CallbackContext context);
         void OnSubmit(InputAction.CallbackContext context);
+        void OnOptions(InputAction.CallbackContext context);
     }
 }

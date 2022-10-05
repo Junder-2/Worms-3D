@@ -1,23 +1,23 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelEffects : MonoBehaviour
+namespace Managers
 {
-    [SerializeField] private GameObject waterSplashPrefab;
-
-    public static LevelEffects Instance;
-
-    private void Awake()
+    public class LevelEffects : MonoBehaviour
     {
-        Instance = this;
-    }
+        [SerializeField] private GameObject waterSplashPrefab;
 
-    public void SpawnWaterSplash(Vector3 pos)
-    {
-        pos.y = 0;
+        public static LevelEffects Instance;
 
-        Instantiate(waterSplashPrefab, pos, Quaternion.identity);
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        public void SpawnWaterSplash(Vector3 pos)
+        {
+            pos.y = 0;
+
+            Instantiate(waterSplashPrefab, pos, Quaternion.identity);
+        }
     }
 }

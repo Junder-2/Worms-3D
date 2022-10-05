@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using UnityEngine;
 
 public class WeaponBat : Weapon
@@ -9,13 +10,13 @@ public class WeaponBat : Weapon
 
     public override void UseWeapon(WormController worm)
     {
-        StartCoroutine(BatAction(worm));
+        StartCoroutine(SwingBat(worm));
     }
 
-    IEnumerator BatAction(WormController worm)
+    IEnumerator SwingBat(WormController worm)
     {
         worm.effects.SetAnimInt("Swing", 1);
-        worm.effects.PlaySound((int)AudioSet.AudioID.UghhYa1);
+        worm.effects.PlaySound((int)AudioSet.AudioID.ughhYa1);
         
         RaycastHit hit;
 
@@ -55,7 +56,7 @@ public class WeaponBat : Weapon
 
         lastZoom = zoom;
 
-        worm.effects.PlaySound((int)AudioSet.AudioID.UghhYa2);
+        worm.effects.PlaySound((int)AudioSet.AudioID.ughhYa2);
 
         if (Physics.Raycast(wormPos, wormForwards, out hit, 5f))
         {
@@ -82,7 +83,7 @@ public class WeaponBat : Weapon
 
                 yield return new WaitForSeconds(.1f);
                 
-                PlayAudio((int)AudioSet.AudioID.BatImpact, Mathf.Max(chargeStrength-1, 0.2f));
+                PlayAudio((int)AudioSet.AudioID.batImpact, Mathf.Max(chargeStrength-1, 0.2f));
 
                 dist *= chargeStrength;
         

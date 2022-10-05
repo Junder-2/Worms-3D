@@ -1,45 +1,43 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour
+namespace Managers
 {
-    public static AudioManager Instance;
+    public class AudioManager : MonoBehaviour
+    {
+        public static AudioManager Instance;
 
-    [SerializeField]
+        [SerializeField]
         private AudioSource soundSource;
 
-    [SerializeField] 
+        [SerializeField] 
         private AudioSource musicSource;
 
-    private void Awake()
-    {
-        if (Instance == null)
+        private void Awake()
         {
+            if (Instance != null) return;
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-    }
 
-    [SerializeField]
-    private AudioSet audioSet;
+        [SerializeField]
+        private AudioSet audioSet;
     
-    public AudioClip GetAudioClip(int index)
-    {
-        return audioSet.GetSound(index);
-    }
+        public AudioClip GetAudioClip(int index)
+        {
+            return audioSet.GetSound(index);
+        }
 
-    public void PlayGlobalSound(int index)
-    {
-        soundSource.PlayOneShot(audioSet.GetSound(index));
-    }
+        public void PlayGlobalSound(int index)
+        {
+            soundSource.PlayOneShot(audioSet.GetSound(index));
+        }
 
-    public void PlayMusic(int index)
-    {
-        musicSource.Stop();
-        musicSource.clip = audioSet.GetMusic(index);
-        musicSource.loop = true;
-        musicSource.Play();
+        public void PlayMusic(int index)
+        {
+            musicSource.Stop();
+            musicSource.clip = audioSet.GetMusic(index);
+            musicSource.loop = true;
+            musicSource.Play();
+        }
     }
 }

@@ -1,48 +1,51 @@
 using UnityEngine;
 
-public class PlayerInfo
+namespace Player
 {
-    public struct PlayerData
+    public static class PlayerInfo
     {
-        public int[] weaponAmount;
+        public struct PlayerData
+        {
+            public int[] WeaponAmount;
 
-        public int[] worms;
-    }
+            public int[] Worms;
+        }
     
-    public struct WormState
-    {
-        public Transform Transform;
+        public struct WormState
+        {
+            public Transform Transform;
         
-        public float camYaw, camPitch, camZoom;
+            public float CamYaw, CamPitch, CamZoom;
 
-        public Transform camFollow;
+            public Transform CamFollow;
 
-        public Vector3 camPos, camRot;
+            public Vector3 CamPos, CamRot;
 
-        public float maxMoveSpeed;
-        public float jumpHeight;
+            public float MaxMoveSpeed;
+            public float JumpHeight;
 
-        public float health;
-        public bool alive;
+            public float Health;
+            public bool Alive;
 
-        public byte wormIndex, playerIndex;
+            public byte WormIndex, PlayerIndex;
 
-        public Vector3 velocity;
+            public Vector3 Velocity;
 
-        public bool freezeCamPitch;
+            public bool FreezeCamPitch;
 
-        public bool freezeCamYaw;
+            public bool FreezeCamYaw;
 
-        public byte currentWeapon;
+            public byte CurrentWeapon;
 
-        public float currentWaterLevel;
+            public float CurrentWaterLevel;
 
-        public bool currentPlayer;
+            public bool CurrentPlayer;
+        }
+
+        public const float SlopeLimit = .65f;
+    
+        public const float HitboxHeight = .3f;
+    
+        public const float TerminalVel = -20;
     }
-
-    public const float SlopeLimit = .65f;
-    
-    public const float HitboxHeight = .3f;
-    
-    public const float TerminalVel = -20;
 }

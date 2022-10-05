@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using UnityEngine;
 
 public class WeaponBazooka : Weapon
@@ -39,10 +40,10 @@ public class WeaponBazooka : Weapon
 
     public override void UseWeapon(WormController worm)
     {
-        StartCoroutine(DelayAction(worm));
+        StartCoroutine(ShootBazooka(worm));
     }
 
-    IEnumerator DelayAction(WormController worm)
+    IEnumerator ShootBazooka(WormController worm)
     {
         //yield return new WaitForSeconds(.25f);
         float timer = 0;
@@ -61,7 +62,7 @@ public class WeaponBazooka : Weapon
 
         float aimUpwards = 0, aimForwards = 5;
 
-        worm.State.freezeCamPitch = true;
+        worm.State.FreezeCamPitch = true;
 
         do
         {

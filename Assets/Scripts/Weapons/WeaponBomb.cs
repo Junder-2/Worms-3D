@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using UnityEngine;
 
 public class WeaponBomb : Weapon
@@ -36,10 +37,10 @@ public class WeaponBomb : Weapon
 
     public override void UseWeapon(WormController worm)
     {
-        StartCoroutine(DelayAction(worm));
+        StartCoroutine(ThrowBomb(worm));
     }
 
-    IEnumerator DelayAction(WormController worm)
+    IEnumerator ThrowBomb(WormController worm)
     {
         yield return new WaitForSeconds(.25f);
 
@@ -49,7 +50,7 @@ public class WeaponBomb : Weapon
 
         float throwUp = 1, throwForward = 1;
 
-        worm.State.freezeCamPitch = true;
+        worm.State.FreezeCamPitch = true;
 
         float zoom = 1;
 
@@ -80,8 +81,6 @@ public class WeaponBomb : Weapon
 
             zoom = Mathf.MoveTowards(zoom, .9f, Time.deltaTime);
             worm.SetCamZoom(zoom);
-            
-            //Debug.DrawRay(transform.position, throwUp/10*worm.GetUp()+throwForward/10*worm.GetForwards());
 
             yield return null;
 
@@ -89,7 +88,7 @@ public class WeaponBomb : Weapon
 
         float lastZoom = zoom;
         
-        worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh1);
+        worm.effects.PlaySound((int)AudioSet.AudioID.hghWuh1);
         worm.effects.SetAnimTrigger("Throw");
 
         //yield return new WaitForSeconds(.31f);
@@ -107,7 +106,7 @@ public class WeaponBomb : Weapon
 
         _amount--;
 
-        worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh2);
+        worm.effects.PlaySound((int)AudioSet.AudioID.hghWuh2);
         
         worm.effects.DisableAimLine();
 

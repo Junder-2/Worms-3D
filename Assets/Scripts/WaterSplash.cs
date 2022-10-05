@@ -9,27 +9,27 @@ public class WaterSplash : MonoBehaviour
 
     [SerializeField] private float lifeTime = 1;
 
-    private float timer = 0;
-    private float startStep;
+    private float _timer = 0;
+    private float _startStep;
 
-    private Material rippleMat;
+    private Material _rippleMat;
     private static readonly int Step = Shader.PropertyToID("_Step");
 
     private void Awake()
     {
-        rippleMat = waterRipples.material;
+        _rippleMat = waterRipples.material;
 
-        startStep = rippleMat.GetFloat(Step);
-        rippleMat.SetFloat(Step, startStep);
+        _startStep = _rippleMat.GetFloat(Step);
+        _rippleMat.SetFloat(Step, _startStep);
     }
 
     private void Update()
     {
-        timer += Time.deltaTime;
+        _timer += Time.deltaTime;
         
-        rippleMat.SetFloat(Step, Mathf.Lerp(startStep, 1, timer/lifeTime));
+        _rippleMat.SetFloat(Step, Mathf.Lerp(_startStep, 1, _timer/lifeTime));
         
-        if(timer/lifeTime > 1)
+        if(_timer/lifeTime > 1)
             Destroy(gameObject);
     }
 }

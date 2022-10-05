@@ -105,7 +105,7 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _MaximumHealth: 3
+    - _MaximumHealth: 1
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -124,10 +124,10 @@ Material:
     m_Colors:
     - _BackgroundColor: {r: 0.9433962, g: 0.7609469, b: 0.8364432, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0, g: 1, b: 0, a: 1}
+    - _Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _HealthColor: {r: 1, g: 0, b: 0, a: 1}
-    - _HealthValuesA: {r: 1, g: 1, b: 1, a: 0}
+    - _HealthValuesA: {r: 1, g: 0, b: 0, a: 0}
     - _HealthValuesB: {r: 0, g: 0, b: 0, a: 0}
     - _SColor: {r: 1, g: 0, b: 0, a: 1}
     - _Scale: {r: 1, g: 1, b: 0, a: 0}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Managers;
 using UnityEngine;
 
 public class ExplosionObject : MonoBehaviour, IEntity
@@ -31,17 +32,16 @@ public class ExplosionObject : MonoBehaviour, IEntity
     private void LateUpdate()
     {
         if(_exploded) return;
+
+        if (!(_rb.position.y < 0)) return;
         
-        if (_rb.position.y < 0)
-        {
-            StopAllCoroutines();
-            StartCoroutine(Explode(0f));
-        }
+        StopAllCoroutines();
+        StartCoroutine(Explode(0f));
     }
 
     IEnumerator Explode(float fuseTime)
     {
-        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.FuseLit), .5f);
+        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.fuseLit), .5f);
         yield return new WaitForSeconds(fuseTime);
         _audioSource.Stop();
 
@@ -49,7 +49,7 @@ public class ExplosionObject : MonoBehaviour, IEntity
         _rb.isKinematic = true;
         bombMesh.SetActive(false);
         explosionEffect.SetActive(true);
-        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.Explosion));
+        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.explosion));
         explosionEffect.transform.localScale = Vector3.one*(_explosionRange*2);
 
         Collider[] hits;

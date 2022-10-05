@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using UnityEngine;
 
 public class WeaponDynamite : Weapon
@@ -49,14 +50,14 @@ public class WeaponDynamite : Weapon
     public override void UseWeapon(WormController worm)
     {
         worm.effects.SetAnimTrigger("Plant");
-        worm.effects.PlaySound((int)AudioSet.AudioID.HghWuh2);
+        worm.effects.PlaySound((int)AudioSet.AudioID.hghWuh2);
 
         _amount--;
 
-        StartCoroutine(DelayPlace(worm.GetPos() + worm.GetForwards()*.5f, worm));
+        StartCoroutine(PlaceDynamite(worm.GetPos() + worm.GetForwards()*.5f, worm));
     }
 
-    IEnumerator DelayPlace(Vector3 pos, WormController worm)
+    IEnumerator PlaceDynamite(Vector3 pos, WormController worm)
     {
         yield return new WaitForSeconds(.25f);
         GameObject plantedDynamite = Instantiate(plantedDynamitePrefab, pos, Quaternion.identity);

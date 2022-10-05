@@ -1,37 +1,37 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIWeaponIcon : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private GameObject selector;
-
-    [SerializeField] private Image image;
-
-    [SerializeField] private TextMeshProUGUI amountText;
-
-    private void Start()
+    public class UIWeaponIcon : MonoBehaviour
     {
-        SetSelector(false);
-    }
+        [SerializeField] private GameObject selector;
 
-    public void SetSelector(bool state)
-    {
-        selector.SetActive(state);
-    }
+        [SerializeField] private Image image;
 
-    private void SetAvailability(bool state)
-    {
-        image.color = state ? Color.white : new Color(1, 1, 1, .25f);
-    }
+        [SerializeField] private TextMeshProUGUI amountText;
 
-    public void SetAmount(int amount)
-    {
-        amountText.text = amount < 0 ? "" : amount.ToString();
+        private void Start()
+        {
+            SetSelector(false);
+        }
 
-        SetAvailability(amount != 0);
+        public void SetSelector(bool state)
+        {
+            selector.SetActive(state);
+        }
+
+        private void SetAvailability(bool state)
+        {
+            image.color = state ? Color.white : new Color(1, 1, 1, .25f);
+        }
+
+        public void SetAmount(int amount)
+        {
+            amountText.text = amount < 0 ? "" : amount.ToString();
+
+            SetAvailability(amount != 0);
+        }
     }
 }

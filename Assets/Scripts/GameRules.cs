@@ -26,7 +26,7 @@ public class GameRules
     public const byte MinRoundTime = 5;
     public const byte MaxRoundTime = 40;
 
-    public static int[] playerAssignedPreset =
+    public static int[] PlayerAssignedPreset =
     {
         0, 1, 2, 4
     };

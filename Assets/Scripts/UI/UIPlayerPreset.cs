@@ -1,25 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIPlayerPreset : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Image iconDisplay;
-
-    public void SetIcon(Sprite icon) => iconDisplay.sprite = icon;
-
-    public bool Active
+    public class UIPlayerPreset : MonoBehaviour
     {
-        get => _active;
+        [SerializeField] private Image iconDisplay;
 
-        set
+        public void SetIcon(Sprite icon) => iconDisplay.sprite = icon;
+
+        public bool Active
         {
-            _active = value;
-            
-            gameObject.SetActive(_active);
-        }
-    }
+            get => _active;
 
-    private bool _active;
+            set
+            {
+                _active = value;
+            
+                gameObject.SetActive(_active);
+            }
+        }
+
+        private bool _active;
+    }
 }

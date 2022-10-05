@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class AimLine : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Mesh mesh;
-    [SerializeField] private Material mat;
-
-    [SerializeField] private float dotScale = 1;
-
-    public void DrawLine(Matrix4x4[] pos)
+    public class AimLine : MonoBehaviour
     {
-        Graphics.DrawMeshInstanced(mesh, 0, mat, pos, pos.Length);
-    }
+        [SerializeField] private Mesh mesh;
+        [SerializeField] private Material mat;
 
-    public float GetScale() => dotScale;
+        [SerializeField] private float dotScale = 1;
+
+        public void DrawLine(Matrix4x4[] pos)
+        {
+            Graphics.DrawMeshInstanced(mesh, 0, mat, pos, pos.Length);
+        }
+
+        public float GetScale() => dotScale;
+    }
 }
