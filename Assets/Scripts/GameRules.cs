@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public class GameRules
+public static class GameRules
 {
     public static byte PlayerAmount = 2;
 

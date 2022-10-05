@@ -209,7 +209,7 @@ namespace Managers
                         Health = maxHealth
                     };
 
-                    _cameraController.InstantiateWormCam(ref newWorm);
+                    _cameraController.SetupWormCamera(ref newWorm);
 
                     _wormsControllers[_wormsPerPlayer * i + j] = newWorm;
                     PlayerData[i].Worms[j] = (byte)(_wormsPerPlayer * i + j);
@@ -311,7 +311,7 @@ namespace Managers
                         _currentWormController.effects.SetHighlight(true);
                     }
                 
-                    finished = _input.aInput == 1;
+                    finished = _input.AInput == 1;
                 
                     camTransitonState = finished ? (byte)2 : (byte)1;
                     break;
@@ -339,7 +339,7 @@ namespace Managers
                 UIManager.Instance.StartTimerUI(10f, true);
             }
         
-            if(_stateTimer > 10f || _input.bInput == 1)
+            if(_stateTimer > 10f || _input.BInput == 1)
                 SceneManager.LoadScene(0);
         }
 

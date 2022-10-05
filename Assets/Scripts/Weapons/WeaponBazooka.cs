@@ -1,128 +1,130 @@
 using System.Collections;
-using System.Collections.Generic;
 using Player;
 using UnityEngine;
 
-public class WeaponBazooka : Weapon
+namespace Weapons
 {
-    private byte _amount = 0;
+    public class WeaponBazooka : Weapon
+    {
+        private byte _amount = 0;
 
-    [SerializeField] private float fuseTime, explosionRange, rocketSpeed;
+        [SerializeField] private float fuseTime, explosionRange, rocketSpeed;
 
-    [SerializeField]
+        [SerializeField]
         private GameObject rocketPrefab;
 
-    [SerializeField] 
+        [SerializeField] 
         private Transform rocketSpawn;
 
-    public override int GetBaseAmount()
-    {
-        switch (GameRules.WormsPerPlayer)
+        public override int GetBaseAmount()
         {
-            case 1:
-                return 1;
-            case 2:
-                return 1;
-            case 3:
-                return 2;
-            case 4:
-                return 3;
+            switch (GameRules.WormsPerPlayer)
+            {
+                case 1:
+                    return 1;
+                case 2:
+                    return 1;
+                case 3:
+                    return 2;
+                case 4:
+                    return 3;
+            }
+        
+            return -1;
         }
-        
-        return -1;
-    }
 
-    public override bool CanEquip() => _amount > 0;
+        public override bool CanEquip() => _amount > 0;
 
-    public override int GetAmount() => _amount;
+        public override int GetAmount() => _amount;
 
-    public override void SetAmount(byte value) => _amount = value;
+        public override void SetAmount(byte value) => _amount = value;
 
-    public override void UseWeapon(WormController worm)
-    {
-        StartCoroutine(ShootBazooka(worm));
-    }
-
-    IEnumerator ShootBazooka(WormController worm)
-    {
-        //yield return new WaitForSeconds(.25f);
-        float timer = 0;
-        float zoom = 1;
-
-        do
+        public override void UseWeapon(WormController worm)
         {
-            timer += Time.deltaTime/.5f;
-            zoom = Mathf.Lerp(1, .5f, timer);
-            worm.SetCamZoom(zoom);
-                    
-            yield return null;
-        } while (timer < 1);
+            StartCoroutine(ShootBazooka(worm));
+        }
 
-        bool aiming = true;
-
-        float aimUpwards = 0, aimForwards = 5;
-
-        worm.State.FreezeCamPitch = true;
-
-        do
+        IEnumerator ShootBazooka(WormController worm)
         {
-            PlayerInput.InputAction input = worm.GetInput();
-            if (input.aInput == 1)
+            //yield return new WaitForSeconds(.25f);
+            float timer = 0;
+            float zoom = 1;
+
+            do
             {
-                worm.effects.DisableAimLine();
-                worm.StopAttackWait();
-                StopAllCoroutines();
-            }
-
-            if (input.bInput == 1)
-                aiming = false;
-
-            if (input.moveNonZero || input.camNonZero)
-            {
-                worm.TurnPlayer(input.rawMoveInput.x*45f*Time.deltaTime);
-
-                aimForwards = Mathf.Clamp(aimForwards + input.rawMoveInput.y * Time.deltaTime*5f, 0, 15f);
-                aimUpwards = Mathf.Clamp(aimUpwards + input.cameraInput.y * Time.deltaTime*5f, -10f, 15f);
-            }
-
-            worm.effects.SetLine(rocketSpawn.position, aimUpwards * Vector3.up + (aimForwards*rocketSpeed) * worm.GetForwards(), 1f);
-
-            //Debug.DrawRay(transform.position, throwUp/10*worm.GetUp()+throwForward/10*worm.GetForwards());
-
-            yield return null;
-
-        } while (aiming);
-
-        float lastZoom = zoom;
-        
-        //worm.SetAnimTrigger("Throw");
-
-        timer = 0;
-        do
-        {
-            timer += Time.deltaTime/.5f;
-            zoom = Mathf.Lerp(lastZoom, 1, timer);
-            worm.SetCamZoom(zoom);
+                timer += Time.deltaTime/.5f;
+                zoom = Mathf.Lerp(1, .5f, timer);
+                worm.SetCamZoom(zoom);
                     
-            yield return null;
-        } while (timer < 1);
+                yield return null;
+            } while (timer < 1);
 
-        _amount--;
+            bool aiming = true;
+
+            float aimUpwards = 0, aimForwards = 5;
+
+            worm.State.FreezeCamPitch = true;
+
+            do
+            {
+                PlayerInput.InputAction input = worm.GetInput();
+                if (input.AInput == 1)
+                {
+                    worm.effects.DisableAimLine();
+                    worm.StopAttackWait();
+                    StopAllCoroutines();
+                }
+
+                if (input.BInput == 1)
+                    aiming = false;
+
+                if (input.MoveNonZero || input.CamNonZero)
+                {
+                    worm.TurnPlayer(input.RawMoveInput.x*45f*Time.deltaTime);
+
+                    aimForwards = Mathf.Clamp(aimForwards + input.RawMoveInput.y * Time.deltaTime*5f, 0, 15f);
+                    aimUpwards = Mathf.Clamp(aimUpwards + input.CameraInput.y * Time.deltaTime*5f, -10f, 15f);
+                }
+
+                worm.effects.SetLine(rocketSpawn.position, aimUpwards * Vector3.up + (aimForwards*rocketSpeed) * worm.GetForwards(), 1f);
+
+                //Debug.DrawRay(transform.position, throwUp/10*worm.GetUp()+throwForward/10*worm.GetForwards());
+
+                yield return null;
+
+            } while (aiming);
+
+            float lastZoom = zoom;
         
-        worm.effects.DisableAimLine();
+            //worm.SetAnimTrigger("Throw");
 
-        Vector3 vel = aimUpwards * Vector3.up + (aimForwards * rocketSpeed) * worm.GetForwards();
+            timer = 0;
+            do
+            {
+                timer += Time.deltaTime/.5f;
+                zoom = Mathf.Lerp(lastZoom, 1, timer);
+                worm.SetCamZoom(zoom);
+                    
+                yield return null;
+            } while (timer < 1);
 
-        float forceMulti = Mathf.Min(vel.magnitude / rocketSpeed, 2) + .5f;
-
-        GameObject rocket = Instantiate(rocketPrefab, rocketSpawn.position, Quaternion.LookRotation(vel.normalized));
-        rocket.GetComponent<ExplosionObject>().Instantiate(baseDamage*forceMulti, baseKnockback*forceMulti, fuseTime, explosionRange);
-        rocket.GetComponent<Rigidbody>().velocity = vel;
-
-        yield return new WaitForSeconds(.8f);
-        worm.StopAttackWait();
+            _amount--;
         
-        if(_amount <= 0)
-            worm.DeEquipWeapon();
+            worm.effects.DisableAimLine();
+
+            Vector3 vel = aimUpwards * Vector3.up + (aimForwards * rocketSpeed) * worm.GetForwards();
+
+            float forceMulti = Mathf.Min(vel.magnitude / rocketSpeed, 2) + .5f;
+
+            GameObject rocket = Instantiate(rocketPrefab, rocketSpawn.position, Quaternion.LookRotation(vel.normalized));
+            rocket.GetComponent<ExplosionObject>().Instantiate(baseDamage*forceMulti, baseKnockback*forceMulti, fuseTime, explosionRange);
+            rocket.GetComponent<Rigidbody>().velocity = vel;
+
+            yield return new WaitForSeconds(.8f);
+            worm.StopAttackWait();
+        
+            if(_amount <= 0)
+                worm.DeEquipWeapon();
+        }
     }
 }

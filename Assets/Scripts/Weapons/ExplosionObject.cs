@@ -1,111 +1,112 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Managers;
 using UnityEngine;
 
-public class ExplosionObject : MonoBehaviour, IEntity
+namespace Weapons
 {
-    private float _maxDamage, _maxForce, _explosionRange;
-
-    [SerializeField] private GameObject bombMesh;
-    [SerializeField] private GameObject explosionEffect;
-
-    private Rigidbody _rb;
-    private AudioSource _audioSource;
-
-    [SerializeField] private bool impactExplode = false;
-
-    public void Instantiate(float maxDamage, float force, float fuseTime, float explosionRange)
+    public class ExplosionObject : MonoBehaviour, IEntity
     {
-        _rb = GetComponent<Rigidbody>();
-        _audioSource = GetComponent<AudioSource>();
-        _maxDamage = maxDamage;
-        _maxForce = force;
-        _explosionRange = explosionRange;
-        
-        LevelController.Instance.SetCamFollow(transform);
-        
-        StartCoroutine(Explode(fuseTime));
-    }
+        private float _maxDamage, _maxForce, _explosionRange;
 
-    private void LateUpdate()
-    {
-        if(_exploded) return;
+        [SerializeField] private GameObject bombMesh;
+        [SerializeField] private GameObject explosionEffect;
 
-        if (!(_rb.position.y < 0)) return;
-        
-        StopAllCoroutines();
-        StartCoroutine(Explode(0f));
-    }
+        private Rigidbody _rb;
+        private AudioSource _audioSource;
 
-    IEnumerator Explode(float fuseTime)
-    {
-        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.fuseLit), .5f);
-        yield return new WaitForSeconds(fuseTime);
-        _audioSource.Stop();
+        [SerializeField] private bool impactExplode = false;
 
-        _exploded = true;
-        _rb.isKinematic = true;
-        bombMesh.SetActive(false);
-        explosionEffect.SetActive(true);
-        _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.explosion));
-        explosionEffect.transform.localScale = Vector3.one*(_explosionRange*2);
-
-        Collider[] hits;
-
-        hits = Physics.OverlapSphere(transform.position, _explosionRange);
-
-        foreach (var hit in hits)
+        public void Instantiate(float maxDamage, float force, float fuseTime, float explosionRange)
         {
-            var entity = hit.transform.GetComponent<IEntity>();
-
-            if (entity != null)
-            {
-                Vector3 dir = (entity.GetPos() - transform.position);
-                
-                float dist = dir.magnitude;
-
-                dist = 1- dist / _explosionRange;
-
-                dir = dir.normalized + Vector3.up;
-                
-                entity.Damage(_maxDamage*dist, dir*(_maxForce*dist));
-            }
+            _rb = GetComponent<Rigidbody>();
+            _audioSource = GetComponent<AudioSource>();
+            _maxDamage = maxDamage;
+            _maxForce = force;
+            _explosionRange = explosionRange;
+        
+            LevelController.Instance.SetCamFollow(transform);
+        
+            StartCoroutine(Explode(fuseTime));
         }
 
-        yield return new WaitForSeconds(.5f);
+        private void LateUpdate()
+        {
+            if(_exploded) return;
+
+            if (!(_rb.position.y < 0)) return;
         
-        DestroySelf();
-    }
+            StopAllCoroutines();
+            StartCoroutine(Explode(0f));
+        }
 
-    private bool _exploded = false;
-    public void Damage(float amount, Vector3 force)
-    {
-        if(_exploded)
-            return;
-        StopAllCoroutines();
-        StartCoroutine(Explode(0.1f));
-    }
+        IEnumerator Explode(float fuseTime)
+        {
+            _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.fuseLit), .5f);
+            yield return new WaitForSeconds(fuseTime);
+            _audioSource.Stop();
 
-    public Vector3 GetPos()
-    {
-        return _rb.position;
-    }
+            _exploded = true;
+            _rb.isKinematic = true;
+            bombMesh.SetActive(false);
+            explosionEffect.SetActive(true);
+            _audioSource.PlayOneShot(AudioManager.Instance.GetAudioClip((int)AudioSet.AudioID.explosion));
+            explosionEffect.transform.localScale = Vector3.one*(_explosionRange*2);
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(!impactExplode) return;
+            Collider[] hits;
+
+            hits = Physics.OverlapSphere(transform.position, _explosionRange);
+
+            foreach (var hit in hits)
+            {
+                var entity = hit.transform.GetComponent<IEntity>();
+
+                if (entity != null)
+                {
+                    Vector3 dir = (entity.GetPos() - transform.position);
+                
+                    float dist = dir.magnitude;
+
+                    dist = 1- dist / _explosionRange;
+
+                    dir = dir.normalized + Vector3.up;
+                
+                    entity.Damage(_maxDamage*dist, dir*(_maxForce*dist));
+                }
+            }
+
+            yield return new WaitForSeconds(.5f);
         
-        if(_exploded)
-            return;
-        StopAllCoroutines();
-        StartCoroutine(Explode(0));
-    }
+            DestroySelf();
+        }
 
-    void DestroySelf()
-    {
-        LevelController.Instance.CancelCamFollow();
-        Destroy(gameObject);
+        private bool _exploded = false;
+        public void Damage(float amount, Vector3 force)
+        {
+            if(_exploded)
+                return;
+            StopAllCoroutines();
+            StartCoroutine(Explode(0.1f));
+        }
+
+        public Vector3 GetPos()
+        {
+            return _rb.position;
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(!impactExplode) return;
+        
+            if(_exploded)
+                return;
+            StopAllCoroutines();
+            StartCoroutine(Explode(0));
+        }
+
+        void DestroySelf()
+        {
+            LevelController.Instance.CancelCamFollow();
+            Destroy(gameObject);
+        }
     }
 }

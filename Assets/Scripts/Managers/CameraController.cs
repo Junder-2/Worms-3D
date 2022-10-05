@@ -22,7 +22,7 @@ namespace Managers
             Instance = this;
         }
 
-        public void InstantiateWormCam(ref WormController wormController)
+        public void SetupWormCamera(ref WormController wormController)
         {
             ref var playerState = ref wormController.State;
             ref var yaw = ref playerState.CamYaw;
@@ -53,9 +53,9 @@ namespace Managers
             float yaw = wormState.CamYaw;
             float pitch = wormState.CamPitch;
             if(!wormState.FreezeCamYaw)
-                yaw += inputs.cameraInput.x * deltaTime * turnSpeed.x;
+                yaw += inputs.CameraInput.x * deltaTime * turnSpeed.x;
             if(!wormState.FreezeCamPitch)
-                pitch -= inputs.cameraInput.y * deltaTime * turnSpeed.y;
+                pitch -= inputs.CameraInput.y * deltaTime * turnSpeed.y;
 
             float offset = camOffset * wormState.CamZoom;
 
@@ -74,7 +74,7 @@ namespace Managers
         
             Vector3 newPos = wormState.Transform.position + camPos;
         
-            Vector3 dir = Vector3.Cross(camPos.normalized, Vector3.up) * -Mathf.Sign(inputs.cameraInput.x);
+            Vector3 dir = Vector3.Cross(camPos.normalized, Vector3.up) * -Mathf.Sign(inputs.CameraInput.x);
         
             RaycastHit hit;
 
@@ -82,7 +82,7 @@ namespace Managers
             {
                 if (hit.distance < WallOffset)
                 {
-                    yaw -= inputs.cameraInput.x * deltaTime * turnSpeed.x;
+                    yaw -= inputs.CameraInput.x * deltaTime * turnSpeed.x;
                 }
             }
         
@@ -111,7 +111,7 @@ namespace Managers
 
                     if (zoomMulti <= .2f)
                     {
-                        pitch += inputs.cameraInput.y * deltaTime * turnSpeed.y;
+                        pitch += inputs.CameraInput.y * deltaTime * turnSpeed.y;
                     }
                 }   
             }
@@ -121,17 +121,19 @@ namespace Managers
             camPos.z *= zoomMulti;
 
             newPos = wormState.CamFollow.position + camPos;
-
-            transform.eulerAngles = new Vector3(-pitch, yaw, 0);
+            
             transform.position = newPos;
 
             wormState.CamYaw = yaw;
             wormState.CamPitch = pitch;
             wormState.CamPos = camPos;
-            wormState.CamRot = transform.eulerAngles;
+            wormState.CamRot = transform.eulerAngles = new Vector3(-pitch, yaw, 0);
 
-            inputs.camYaw = yaw;
+            inputs.CamYaw = yaw;
         }
+        //Struggled with the camera movement a lot, the result is a working camera that has simple collision but can be 
+        //jumpy and jittery at times. If I were to redo this project I would do more research on implementations that
+        //fixes these issues
 
         [SerializeField] private float transitionSpeed = 5;
 
@@ -149,5 +151,8 @@ namespace Managers
 
             return t >= 1;
         }
+        //The transition works well but can sometimes spin in weird directions. I believe its due to my usage of
+        //Vector3.Slerp a better implementation would probably handle the interpolation method different for each axis
+
     }
 }

@@ -8,22 +8,19 @@ namespace Player
     
         public struct InputAction
         {
-            public Vector2 rawMoveInput;
+            public Vector2 RawMoveInput;
         
-            public Vector2 moveInput;
-            public Vector2 cameraInput;
+            public Vector2 MoveInput;
+            public Vector2 CameraInput;
         
-            public byte aInput;
-            public byte bInput;
-            public byte xInput;
+            public byte AInput;
+            public byte BInput;
+            public byte XInput;
 
-            public float camYaw;
+            public float CamYaw;
 
-            public bool moveNonZero;
-            public bool camNonZero;
-
-            //public float deltaTime;
-            //public float fixedDeltatime;
+            public bool MoveNonZero;
+            public bool CamNonZero;
         }
 
         private void OnEnable()
@@ -42,20 +39,20 @@ namespace Player
 
             var action = _input.Actions;
 
-            action.AInput.started += ctx => _aInput = true;
-            action.AInput.canceled += ctx => _aInput = false;
+            action.AInput.started += _ => _aInput = true;
+            action.AInput.canceled += _ => _aInput = false;
         
-            action.BInput.started += ctx => _bInput = true;
-            action.BInput.canceled += ctx => _bInput = false;
+            action.BInput.started += _ => _bInput = true;
+            action.BInput.canceled += _ => _bInput = false;
 
-            action.XInput.started += ctx => _xInput = true;
-            action.XInput.canceled += ctx => _xInput = false;
+            action.XInput.started += _ => _xInput = true;
+            action.XInput.canceled += _ => _xInput = false;
 
             action.Move.performed += ctx => _moveInput = ctx.ReadValue<Vector2>();
-            action.Move.canceled += ctx => _moveInput = Vector2.zero;
+            action.Move.canceled += _ => _moveInput = Vector2.zero;
         
             action.Camera.performed += ctx => _cameraInput = ctx.ReadValue<Vector2>();
-            action.Camera.canceled += ctx => _cameraInput = Vector2.zero;
+            action.Camera.canceled += _ => _cameraInput = Vector2.zero;
         }
 
         private bool _aInput;
@@ -67,41 +64,40 @@ namespace Player
 
         public void UpdateInputs(ref InputAction input)
         {
-            float camYaw = input.camYaw * Mathf.Deg2Rad;
+            float camYaw = input.CamYaw * Mathf.Deg2Rad;
             float camCos = Mathf.Cos(camYaw);
             float camSin = Mathf.Sin(camYaw);
 
-            input.rawMoveInput = _moveInput;
+            input.RawMoveInput = _moveInput;
 
-            input.moveNonZero = _moveInput.magnitude > .1f;
-            input.camNonZero = _cameraInput.magnitude > .1f;
+            input.MoveNonZero = _moveInput.magnitude > .1f;
+            input.CamNonZero = _cameraInput.magnitude > .1f;
 
-            input.moveInput = new Vector2(_moveInput.x * camCos + _moveInput.y * camSin,
+            input.MoveInput = new Vector2(_moveInput.x * camCos + _moveInput.y * camSin,
                 -_moveInput.x * camSin + _moveInput.y * camCos);
 
-            input.cameraInput = _cameraInput;
+            input.CameraInput = _cameraInput;
         
-            if (_aInput && input.aInput == 0)
-                input.aInput = 1;
+            if (_aInput && input.AInput == 0)
+                input.AInput = 1;
             else if (_aInput)
-                input.aInput = 2;
+                input.AInput = 2;
             else
-                input.aInput = 0;
+                input.AInput = 0;
 
-            if (_bInput && input.bInput == 0)
-                input.bInput = 1;
+            if (_bInput && input.BInput == 0)
+                input.BInput = 1;
             else if (_bInput)
-                input.bInput = 2;
+                input.BInput = 2;
             else
-                input.bInput = 0;
+                input.BInput = 0;
         
-            if (_xInput && input.xInput == 0)
-                input.xInput = 1;
+            if (_xInput && input.XInput == 0)
+                input.XInput = 1;
             else if (_xInput)
-                input.xInput = 2;
+                input.XInput = 2;
             else
-                input.xInput = 0;
+                input.XInput = 0;
         }
-
     }
 }

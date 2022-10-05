@@ -1,71 +1,72 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Player;
 using UnityEngine;
 
-public class WeaponDynamite : Weapon
+namespace Weapons
 {
-    //[SerializeField] private byte startAmount;
+    public class WeaponDynamite : Weapon
+    {
+        //[SerializeField] private byte startAmount;
 
-    private byte _amount = 1;
+        private byte _amount = 1;
 
-    [SerializeField] private float fuseTime, explosionRange;
+        [SerializeField] private float fuseTime, explosionRange;
 
-    [SerializeField]
+        [SerializeField]
         private GameObject plantedDynamitePrefab;
 
-    public override int GetBaseAmount()
-    {
-        switch (GameRules.WormsPerPlayer)
+        public override int GetBaseAmount()
         {
-            case 1:
-                return 1;
-            case 2:
-                return 2;
-            case 3:
-                return 3;
-            case 4:
-                return 3;
+            switch (GameRules.WormsPerPlayer)
+            {
+                case 1:
+                    return 1;
+                case 2:
+                    return 2;
+                case 3:
+                    return 3;
+                case 4:
+                    return 3;
+            }
+        
+            return -1;
         }
-        
-        return -1;
-    }
 
-    public override int GetAmount()
-    {
-        return _amount;
-    }
+        public override int GetAmount()
+        {
+            return _amount;
+        }
     
-    public override void SetAmount(byte value)
-    {
-        _amount = value;
-    }
+        public override void SetAmount(byte value)
+        {
+            _amount = value;
+        }
 
-    public override bool CanEquip()
-    {
-        return _amount > 0;
-    }
+        public override bool CanEquip()
+        {
+            return _amount > 0;
+        }
     
-    public override void UseWeapon(WormController worm)
-    {
-        worm.effects.SetAnimTrigger("Plant");
-        worm.effects.PlaySound((int)AudioSet.AudioID.hghWuh2);
+        public override void UseWeapon(WormController worm)
+        {
+            worm.effects.SetAnimTrigger("Plant");
+            worm.effects.PlaySound((int)AudioSet.AudioID.hghWuh2);
 
-        _amount--;
+            _amount--;
 
-        StartCoroutine(PlaceDynamite(worm.GetPos() + worm.GetForwards()*.5f, worm));
-    }
+            StartCoroutine(PlaceDynamite(worm.GetPos() + worm.GetForwards()*.5f, worm));
+        }
 
-    IEnumerator PlaceDynamite(Vector3 pos, WormController worm)
-    {
-        yield return new WaitForSeconds(.25f);
-        GameObject plantedDynamite = Instantiate(plantedDynamitePrefab, pos, Quaternion.identity);
-        plantedDynamite.GetComponent<ExplosionObject>().Instantiate(baseDamage, baseKnockback, fuseTime, explosionRange);
+        IEnumerator PlaceDynamite(Vector3 pos, WormController worm)
+        {
+            yield return new WaitForSeconds(.25f);
+            GameObject plantedDynamite = Instantiate(plantedDynamitePrefab, pos, Quaternion.identity);
+            plantedDynamite.GetComponent<ExplosionObject>().Instantiate(baseDamage, baseKnockback, fuseTime, explosionRange);
         
-        yield return new WaitForSeconds(.5f);
-        worm.StopAttackWait();
-        if(_amount <= 0)
-            worm.DeEquipWeapon();
+            yield return new WaitForSeconds(.5f);
+            worm.StopAttackWait();
+            if(_amount <= 0)
+                worm.DeEquipWeapon();
+        }
     }
 }

@@ -31,5 +31,8 @@ public class AudioSet : ScriptableObject
     {
         return songClips[index];
     }
-
+    
+    //The idea behind this approach of handling audio was to have a constant reference to each audioclip but still be
+    //able to swap the file in an easy way. Improvements that could be made is a solution to it clearing the assigned
+    //clips when adding or removing audioIDs  
 }

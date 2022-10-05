@@ -112,7 +112,6 @@ namespace Player
                 pos.y += Physics.gravity.y * timePos *timePos*.5f;
 
                 trans[i] = Matrix4x4.TRS(pos, Quaternion.identity, Vector3.one*scale);
-                //Debug.Log(pos[i].y);
             }
         
             aimLine.DrawLine(trans);

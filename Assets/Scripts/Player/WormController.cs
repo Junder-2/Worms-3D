@@ -1,6 +1,7 @@
 using Managers;
 using UI;
 using UnityEngine;
+using Weapons;
 using Random = UnityEngine.Random;
 
 namespace Player
@@ -140,14 +141,15 @@ namespace Player
         }
 
         #region StateMachine
-    
-        public enum ActionState{idle, moving, jump, freefall, slide, attack, death}
+
+        private enum ActionState{idle, moving, jump, freefall, slide, attack, death}
 
         private ActionState _previousState;
         private ActionState _currentState;
 
         private float _stateTimer;
-        void SetState(ActionState state)
+
+        private void SetState(ActionState state)
         {
             if (_currentState == ActionState.moving && state != ActionState.jump)
                 _forwardVel = 0;
@@ -204,25 +206,25 @@ namespace Player
                 return;
             }
 
-            if (_input.moveNonZero)
+            if (_input.MoveNonZero)
             {
                 SetState(ActionState.moving);
                 return;
             }
 
-            if (_input.aInput == 1)
+            if (_input.AInput == 1)
             {
                 SetState(ActionState.jump);
                 return;
             }
 
-            if (_input.bInput == 1 && State.CurrentWeapon != 0)
+            if (_input.BInput == 1 && State.CurrentWeapon != 0)
             {
                 SetState(ActionState.attack);
                 return;
             }
         
-            if(_input.xInput == 1)
+            if(_input.XInput == 1)
                 SwitchWeapon();
             
         }
@@ -235,13 +237,13 @@ namespace Player
                 effects.SetAnimBool("Walk", true);
             }
 
-            if (!_input.moveNonZero)
+            if (!_input.MoveNonZero)
             {
                 SetState(ActionState.idle);
                 return;
             }
 
-            Vector3 move = new Vector3(_input.moveInput.x, 0, _input.moveInput.y);
+            Vector3 move = new Vector3(_input.MoveInput.x, 0, _input.MoveInput.y);
             move = Vector3.ProjectOnPlane(move, _normalVector);
             float maxSpeed = State.MaxMoveSpeed;
 
@@ -274,14 +276,14 @@ namespace Player
                 return;
             }
 
-            if (_input.aInput > 0)
+            if (_input.AInput > 0)
             {
                 State.Velocity = _forwardVector * Mathf.Max(_forwardVel, maxSpeed/2);
                 SetState(ActionState.jump);
                 return;
             }
         
-            if(_input.xInput == 1)
+            if(_input.XInput == 1)
                 SwitchWeapon();
         }
 
@@ -305,7 +307,7 @@ namespace Player
                 return;
             }
         
-            if(_input.xInput == 1)
+            if(_input.XInput == 1)
                 SwitchWeapon();
         }
 
@@ -324,7 +326,7 @@ namespace Player
         
             float multi = 1;
 
-            if (_holdJump && _input.aInput > 1 && State.Velocity.y > 0)
+            if (_holdJump && _input.AInput > 1 && State.Velocity.y > 0)
                 multi = .4f;
             else
             {
@@ -346,7 +348,7 @@ namespace Player
                 return;
             }
         
-            if(_input.xInput == 1)
+            if(_input.XInput == 1)
                 SwitchWeapon();
         }
 
@@ -365,7 +367,7 @@ namespace Player
                 return;
             }
         
-            if(_input.xInput == 1)
+            if(_input.XInput == 1)
                 SwitchWeapon();
         }
     
@@ -598,7 +600,7 @@ namespace Player
         } 
         private bool _attackWait;
 
-        public void ForceEndTurn() => LevelController.Instance.ForceTurnEnd();
+        private void ForceEndTurn() => LevelController.Instance.ForceTurnEnd();
 
         public void SetCamZoom(float value)
         {
