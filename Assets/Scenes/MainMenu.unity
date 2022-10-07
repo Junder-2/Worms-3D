@@ -2580,6 +2580,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 281922009742042158, guid: 51c213d27a6467a41a085cf32d2f5881, type: 3}
+      propertyPath: presetIcon.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: 4c731cb4edc843a49802fe8074cf04f0, type: 3}
+    - target: {fileID: 281922009742042158, guid: 51c213d27a6467a41a085cf32d2f5881, type: 3}
+      propertyPath: presetIcon.Array.data[3]
+      value: 
+      objectReference: {fileID: 21300000, guid: 093977c795724314ea099112a67ffce6, type: 3}
     - target: {fileID: 281922009742042163, guid: 51c213d27a6467a41a085cf32d2f5881, type: 3}
       propertyPath: m_Name
       value: PlaySettings

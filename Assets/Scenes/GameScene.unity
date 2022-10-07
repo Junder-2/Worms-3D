@@ -1214,8 +1214,8 @@ MonoBehaviour:
   displayHat:
   - {fileID: 740823729}
   - {fileID: 1387642431}
-  - {fileID: 431975322}
   - {fileID: 596360461}
+  - {fileID: 431975322}
 --- !u!224 &595250418
 RectTransform:
   m_ObjectHideFlags: 0

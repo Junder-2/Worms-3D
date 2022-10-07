@@ -486,8 +486,8 @@ MonoBehaviour:
   displayHat:
   - {fileID: 1095247940888954778}
   - {fileID: 8155329871379640847}
-  - {fileID: 5622196059961358737}
   - {fileID: 4353858062972921828}
+  - {fileID: 5622196059961358737}
 --- !u!1 &8155329871379640847
 GameObject:
   m_ObjectHideFlags: 0
